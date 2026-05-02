@@ -1,11 +1,10 @@
-﻿using Application.Interfaces.Repositories;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Enums;
 using MediatR;
 
 namespace Application.Behaviour.Institution
 {
-    public class UpdateInstitutionCommand : IRequest
+    public record UpdateInstitutionCommand : IRequest
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
@@ -19,7 +18,9 @@ namespace Application.Behaviour.Institution
     {
         public async Task Handle(UpdateInstitutionCommand request, CancellationToken cancellationToken)
         {
-            InstitutionEntity entity = await repository.GetByIdAsync(request.Id);
+            InstitutionEntity? entity = await repository.GetByIdAsync(request.Id);
+            if (entity == null)
+                throw new InvalidOperationException($"Заведение с Id={request.Id} не найдено");
 
             entity.Name = request.Name;
             entity.Address = request.Address;

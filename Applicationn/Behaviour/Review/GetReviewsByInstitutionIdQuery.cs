@@ -1,10 +1,9 @@
-﻿using Application.Interfaces.Repositories;
-using Domain.Entities;
+﻿using Domain.Entities;
 using MediatR;
 
 namespace Application.Behaviour.Review
 {
-    public class GetReviewsByInstitutionIdQuery : IRequest<List<ReviewEntity>>
+    public record GetReviewsByInstitutionIdQuery : IRequest<List<ReviewEntity>>
     {
         public Guid InstitutionId { get; set; }
     }

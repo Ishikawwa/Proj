@@ -1,8 +1,8 @@
 ﻿using Application.Behaviour.User;
-using Domain.Entities;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Project.DTO;
+using Project.DTO.UserDto;
 
 namespace Project.Controllers
 {
@@ -11,27 +11,26 @@ namespace Project.Controllers
     public class UserController(IMediator mediator) : ControllerBase
     {
         [HttpPost]
-        public async Task<Guid> Create(CreateUserDto dto)
-            => await mediator.Send(new CreateUserCommand
-            {
-                Nickname = dto.Nickname,
-                AvatarUrl = dto.AvatarUrl
-            });
+        public async Task<UserDto> Create([FromBody] UserToCreateDto dto)
+            => (await mediator.Send(dto.Adapt<CreateUserCommand>()))
+                .Adapt<UserDto>();
 
         [HttpGet("{id}")]
-        public async Task<UserEntity> GetById(Guid id)
-            => await mediator.Send(new GetUserByIdQuery { Id = id });
+        public async Task<UserDto> GetById([FromRoute] Guid id)
+            => (await mediator.Send(new GetUserByIdQuery { Id = id }))
+                .Adapt<UserDto>();
 
         [HttpGet]
-        public async Task<List<UserEntity>> GetAll([FromQuery] string? nicknameFilter = null)
-            => await mediator.Send(new GetUsersQuery { NicknameFilter = nicknameFilter });
+        public async Task<List<UserDto>> GetAll([FromQuery] string? nicknameFilter = null)
+            => (await mediator.Send(new GetUsersQuery { NicknameFilter = nicknameFilter }))
+                .Adapt<List<UserDto>>();
 
         [HttpPut("{id}/ban")]
-        public async Task Ban(Guid id)
+        public async Task Ban([FromRoute] Guid id)
             => await mediator.Send(new BanUserCommand { Id = id });
 
         [HttpPut("{id}/mute")]
-        public async Task Mute(Guid id)
+        public async Task Mute([FromRoute] Guid id)
             => await mediator.Send(new MuteUserCommand { Id = id });
     }
 }

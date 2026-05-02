@@ -1,16 +1,12 @@
-﻿using System;
-using Domain.Entities;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Entities;
 
 namespace Application.Interfaces.Repositories
 {
     public interface IOwnerRequestRepository
     {
         Task AddAsync(OwnerRequestEntity entity);
-        Task<List<OwnerRequestEntity>> GetAllAsync();
+        Task<List<OwnerRequestEntity>> GetPendingAsync();
+        Task MarkAsProcessedAsync(Guid id);
         Task DeleteAsync(Guid id);
     }
 }

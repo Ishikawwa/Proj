@@ -4,15 +4,15 @@ using MediatR;
 
 namespace Application.Behaviour.Visiting
 {
-    public class CreateVisitingInstitutionCommand : IRequest<Guid>
+    public record CreateVisitingInstitutionCommand : IRequest<VisitingEntity>
     {
         public Guid UserId { get; set; }
         public Guid InstitutionId { get; set; }
     }
 
-    public sealed class CreateVisitingInstitutionCommandHandler(IVisitingRepository repository) : IRequestHandler<CreateVisitingInstitutionCommand, Guid>
+    public sealed class CreateVisitingInstitutionCommandHandler(IVisitingRepository repository) : IRequestHandler<CreateVisitingInstitutionCommand, VisitingEntity>
     {
-        public async Task<Guid> Handle(CreateVisitingInstitutionCommand request, CancellationToken cancellationToken)
+        public async Task<VisitingEntity> Handle(CreateVisitingInstitutionCommand request, CancellationToken cancellationToken)
         {
             VisitingEntity entity = new()
             {
@@ -23,7 +23,7 @@ namespace Application.Behaviour.Visiting
 
             await repository.AddAsync(entity);
 
-            return entity.Id;
+            return entity;
         }
     }
 }

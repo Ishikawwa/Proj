@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Behaviour.Institution
 {
-    public class GetInstitutionByIdCommand : IRequest<InstitutionEntity>
+    public record GetInstitutionByIdCommand : IRequest<InstitutionEntity>
     {
         public Guid Id { get; set; }
     }

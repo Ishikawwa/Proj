@@ -1,9 +1,8 @@
-﻿using Application.Interfaces.Repositories;
-using MediatR;
+﻿using MediatR;
 
 namespace Application.Behaviour.Review
 {
-    public class DeleteReviewCommand : IRequest
+    public record DeleteReviewCommand : IRequest
     {
         public Guid Id { get; set; }
         public bool IsArchive { get; set; }

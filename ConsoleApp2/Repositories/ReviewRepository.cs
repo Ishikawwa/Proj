@@ -1,5 +1,4 @@
-﻿using Application.Interfaces.Repositories;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories
@@ -12,42 +11,30 @@ namespace Persistence.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<ReviewEntity> GetByIdAsync(Guid id)
+        public Task<ReviewEntity?> GetByIdAsync(Guid id)
         {
-            return await context.Reviews.FirstOrDefaultAsync(x => x.Id == id);
+            return context.Reviews.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<ReviewEntity>> GetByInstitutionIdAsync(Guid institutionId)
+        public Task<List<ReviewEntity>> GetByInstitutionIdAsync(Guid institutionId)
         {
-            return await context.Reviews.Where(x => x.InstitutionId == institutionId).ToListAsync();
+            return context.Reviews.Where(x => x.InstitutionId == institutionId).ToListAsync();
         }
 
-        public async Task UpdateAsync(ReviewEntity entity)
+        public Task UpdateAsync(ReviewEntity entity)
         {
             context.Reviews.Update(entity);
-            await context.SaveChangesAsync();
+            return context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public Task DeleteAsync(Guid id)
         {
-            ReviewEntity entity = await context.Reviews.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (entity != null)
-            {
-                context.Reviews.Remove(entity);
-                await context.SaveChangesAsync();
-            }
+            return context.Reviews.Where(x => x.Id == id).ExecuteDeleteAsync();
         }
 
-        public async Task BanAsync(Guid id)
+        public Task BanAsync(Guid id)
         {
-            ReviewEntity entity = await context.Reviews.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (entity != null)
-            {
-                context.Reviews.Remove(entity);
-                await context.SaveChangesAsync();
-            }
+            return context.Reviews.Where(x => x.Id == id).ExecuteUpdateAsync(s => s.SetProperty(x => x.IsBanned, true));
         }
     }
 }

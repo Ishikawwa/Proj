@@ -1,8 +1,8 @@
 ﻿using Application.Behaviour.Institution;
-using Domain.Entities;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Project.DTO.Favorite;
+using Project.DTO.FavoriteInstitutionDto;
 
 namespace Project.Controllers
 {
@@ -11,15 +11,16 @@ namespace Project.Controllers
     public class FavouriteController(IMediator mediator) : ControllerBase
     {
         [HttpPost]
-        public async Task<Guid> Add(AddInFavouriteListDto dto)
-            => await mediator.Send(new AddInFavoriteListCommand
-            {
-                UserId = dto.UserId,
-                InstitutionId = dto.InstitutionId
-            });
+        public async Task Add([FromBody] AddInFavoriteInstitutionListDto dto)
+            => await mediator.Send(dto.Adapt<AddInFavoriteListCommand>());
 
         [HttpGet("{userId}")]
-        public async Task<List<FavouriteInstitutionEntity>> GetByUser(Guid userId)
-            => await mediator.Send(new GetFavoriteListQuery { UserId = userId });
+        public async Task<List<UsersFavoriteInstitutionDto>> GetByUser([FromRoute] Guid userId)
+            => (await mediator.Send(new GetFavoriteListQuery { UserId = userId }))
+                .Adapt<List<UsersFavoriteInstitutionDto>>();
+
+        [HttpDelete("{id}")]
+        public async Task Remove([FromRoute] Guid id)
+            => await mediator.Send(new RemoveFromFavoriteListCommand { Id = id });
     }
 }

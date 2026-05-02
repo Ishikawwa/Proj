@@ -4,28 +4,32 @@ using MediatR;
 
 namespace Application.Behaviour.ReviewReport
 {
-    public class CreateReviewReportCommand : IRequest<Guid>
+    public record CreateReviewReportCommand : IRequest<SpamReportEntity>
     {
         public Guid UserId { get; set; }
         public Guid ReviewId { get; set; }
         public string Comment { get; set; }
     }
 
-    public sealed class CreateReviewReportCommandHandler(ISpamReportRepository repository) : IRequestHandler<CreateReviewReportCommand, Guid>
+    public sealed class CreateReviewReportCommandHandler(ISpamReportRepository repository, IReviewRepository reviewRepository) : IRequestHandler<CreateReviewReportCommand, SpamReportEntity>
     {
-        public async Task<Guid> Handle(CreateReviewReportCommand request, CancellationToken cancellationToken)
+        public async Task<SpamReportEntity> Handle(CreateReviewReportCommand request, CancellationToken cancellationToken)
         {
+            ReviewEntity? review = await reviewRepository.GetByIdAsync(request.ReviewId);
+            if (review is null)
+                throw new InvalidOperationException($"Отзыв с Id={request.ReviewId} не найден");
+
             SpamReportEntity entity = new()
             {
                 Id = Guid.NewGuid(),
                 UserId = request.UserId,
                 ReviewId = request.ReviewId,
-                Comment = request.Comment
+                Comment = request.Comment,
             };
 
             await repository.AddAsync(entity);
 
-            return entity.Id;
+            return entity;
         }
     }
 }

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Behaviour.User
 {
-    public class BanUserCommand : IRequest
+    public record BanUserCommand : IRequest
     {
         public Guid Id { get; set; }
     }

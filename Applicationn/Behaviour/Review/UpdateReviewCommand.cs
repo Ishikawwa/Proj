@@ -1,10 +1,9 @@
-﻿using Application.Interfaces.Repositories;
-using Domain.Entities;
+﻿using Domain.Entities;
 using MediatR;
 
 namespace Application.Behaviour.Review
 {
-    public class UpdateReviewCommand : IRequest
+    public record UpdateReviewCommand : IRequest
     {
         public Guid Id { get; set; }
         public string Comment { get; set; }
@@ -15,7 +14,9 @@ namespace Application.Behaviour.Review
     {
         public async Task Handle(UpdateReviewCommand request, CancellationToken cancellationToken)
         {
-            ReviewEntity entity = await repository.GetByIdAsync(request.Id);
+            ReviewEntity? entity = await repository.GetByIdAsync(request.Id);
+            if (entity == null)
+                throw new InvalidOperationException($"Отзыв с Id={request.Id} не найден.");
 
             entity.Comment = request.Comment;
             entity.Score = request.Score;

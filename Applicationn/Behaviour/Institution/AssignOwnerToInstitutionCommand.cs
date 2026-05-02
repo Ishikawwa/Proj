@@ -1,9 +1,8 @@
-﻿using Application.Interfaces.Repositories;
-using MediatR;
+﻿using MediatR;
 
 namespace Application.Behaviour.Institution
 {
-    public class AssignOwnerToInstitutionCommand : IRequest
+    public record AssignOwnerToInstitutionCommand : IRequest
     {
         public Guid InstitutionId { get; set; }
         public Guid OwnerId { get; set; }

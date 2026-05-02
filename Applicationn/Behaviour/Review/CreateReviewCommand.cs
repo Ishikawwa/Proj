@@ -1,10 +1,9 @@
-﻿using Application.Interfaces.Repositories;
-using Domain.Entities;
+﻿using Domain.Entities;
 using MediatR;
 
 namespace Application.Behaviour.Review
 {
-    public class CreateReviewCommand : IRequest<Guid>
+    public record CreateReviewCommand : IRequest<ReviewEntity>
     {
         public Guid UserId { get; set; }
         public Guid InstitutionId { get; set; }
@@ -12,9 +11,9 @@ namespace Application.Behaviour.Review
         public int Score { get; set; }
     }
 
-    public sealed class CreateReviewCommandHandler(IReviewRepository repository) : IRequestHandler<CreateReviewCommand, Guid>
+    public sealed class CreateReviewCommandHandler(IReviewRepository repository) : IRequestHandler<CreateReviewCommand, ReviewEntity>
     {
-        public async Task<Guid> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
+        public async Task<ReviewEntity> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
         {
             ReviewEntity entity = new()
             {
@@ -28,7 +27,7 @@ namespace Application.Behaviour.Review
 
             await repository.AddAsync(entity);
 
-            return entity.Id;
+            return entity;
         }
     }
 }

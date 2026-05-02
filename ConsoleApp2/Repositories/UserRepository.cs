@@ -12,41 +12,29 @@ namespace Persistence.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<UserEntity> GetByIdAsync(Guid id)
+        public Task<UserEntity?> GetByIdAsync(Guid id)
         {
-            return await context.Users.FirstOrDefaultAsync(x => x.Id == id);
+            return context.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<UserEntity>> GetAllAsync()
+        public Task<List<UserEntity>> GetAllAsync()
         {
-            return await context.Users.ToListAsync();
+            return context.Users.ToListAsync();
         }
 
-        public async Task BanAsync(Guid id)
+        public Task BanAsync(Guid id)
         {
-            UserEntity entity = await context.Users.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (entity != null)
-            {
-                context.Users.Remove(entity);
-                await context.SaveChangesAsync();
-            }
+            return context.Users.Where(x => x.Id == id).ExecuteUpdateAsync(s => s.SetProperty(x => x.IsBanned, true));
         }
 
-        public async Task MuteAsync(Guid id)
+        public Task MuteAsync(Guid id)
         {
-            await context.SaveChangesAsync();
+            return context.Users.Where(x => x.Id == id).ExecuteUpdateAsync(s => s.SetProperty(x => x.IsMuted, true));
         }
 
-        public async Task DeleteAsync(Guid id)
+        public Task DeleteAsync(Guid id)
         {
-            UserEntity entity = await context.Users.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (entity != null)
-            {
-                context.Users.Remove(entity);
-                await context.SaveChangesAsync();
-            }
+            return context.Users.Where(x => x.Id == id).ExecuteDeleteAsync();
         }
     }
 }

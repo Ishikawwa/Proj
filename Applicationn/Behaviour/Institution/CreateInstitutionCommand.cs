@@ -1,11 +1,10 @@
-﻿using Application.Interfaces.Repositories;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Enums;
 using MediatR;
 
 namespace Application.Behaviour.Institution
 {
-    public class CreateInstitutionCommand : IRequest<Guid>
+    public record CreateInstitutionCommand : IRequest<InstitutionEntity>
     {
         public string Name { get; set; }
         public long Longitude { get; set; }
@@ -16,9 +15,9 @@ namespace Application.Behaviour.Institution
         public string? WebUrl { get; set; }
     }
 
-    public sealed class CreateInstitutionCommandHandler(IInstitutionRepository repository) : IRequestHandler<CreateInstitutionCommand, Guid>
+    public sealed class CreateInstitutionCommandHandler(IInstitutionRepository repository) : IRequestHandler<CreateInstitutionCommand, InstitutionEntity>
     {
-        public async Task<Guid> Handle(CreateInstitutionCommand request, CancellationToken cancellationToken)
+        public async Task<InstitutionEntity> Handle(CreateInstitutionCommand request, CancellationToken cancellationToken)
         {
             InstitutionEntity entity = new()
             {
@@ -37,7 +36,7 @@ namespace Application.Behaviour.Institution
 
             await repository.AddAsync(entity);
 
-            return entity.Id;
+            return entity;
         }
     }
 }

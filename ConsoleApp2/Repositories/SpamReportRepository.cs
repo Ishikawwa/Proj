@@ -12,20 +12,19 @@ namespace Persistence.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<List<SpamReportEntity>> GetAllAsync()
+        public Task DeleteAsync(Guid id)
         {
-            return await context.SpamReports.ToListAsync();
+            return context.SpamReports.Where(x => x.Id == id).ExecuteDeleteAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public Task<List<SpamReportEntity>> GetPendingAsync()
         {
-            SpamReportEntity entity = await context.SpamReports.FirstOrDefaultAsync(x => x.Id == id);
+            return context.SpamReports.Where(x => !x.IsProcessed).ToListAsync();
+        }
 
-            if (entity != null)
-            {
-                context.SpamReports.Remove(entity);
-                await context.SaveChangesAsync();
-            }
+        public Task MarkAsProcessedAsync(Guid id)
+        {
+            return context.SpamReports.Where(x => x.Id == id).ExecuteUpdateAsync(s => s.SetProperty(x => x.IsProcessed, true));
         }
     }
 }

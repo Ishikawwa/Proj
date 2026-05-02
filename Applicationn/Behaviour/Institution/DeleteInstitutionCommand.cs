@@ -1,9 +1,8 @@
-﻿using Application.Interfaces.Repositories;
-using MediatR;
+﻿using MediatR;
 
 namespace Application.Behaviour.Institution
 {
-    public class DeleteInstitutionCommand : IRequest
+    public record DeleteInstitutionCommand : IRequest
     {
         public Guid Id { get; set; }
         public bool IsArchive { get; set; }

@@ -12,21 +12,14 @@ namespace Persistence.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<List<WorkingHoursEntity>> GetByInstitutionIdAsync(Guid institutionId)
+        public Task<List<WorkingHoursEntity>> GetByInstitutionIdAsync(Guid institutionId)
         {
-            return await context.WorkingHours.Where(x => x.InstitutionId == institutionId).ToListAsync();
+            return context.WorkingHours.Where(x => x.InstitutionId == institutionId).ToListAsync();
         }
 
-        public async Task DeleteAsync(Guid institutionId, DayOfWeek dayOfWeek)
+        public Task DeleteAsync(Guid institutionId, DayOfWeek dayOfWeek)
         {
-            List<WorkingHoursEntity> entities = await context.WorkingHours
-                .Where(x => x.InstitutionId == institutionId).ToListAsync();
-
-            if (entities.Any())
-            {
-                context.WorkingHours.RemoveRange(entities);
-                await context.SaveChangesAsync();
-            }
+            return context.WorkingHours.Where(x => x.InstitutionId == institutionId && x.DayOfWeek == dayOfWeek).ExecuteDeleteAsync();
         }
     }
 }

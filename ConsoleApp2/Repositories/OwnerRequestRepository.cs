@@ -12,20 +12,19 @@ namespace Persistence.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<List<OwnerRequestEntity>> GetAllAsync()
+        public Task DeleteAsync(Guid id)
         {
-            return await context.OwnerRequests.ToListAsync();
+            return context.OwnerRequests.Where(x => x.Id == id).ExecuteDeleteAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public Task<List<OwnerRequestEntity>> GetPendingAsync()
         {
-            OwnerRequestEntity entity = await context.OwnerRequests.FirstOrDefaultAsync(x => x.Id == id);
+            return context.OwnerRequests.Where(x => !x.IsProcessed).ToListAsync();
+        }
 
-            if (entity != null)
-            {
-                context.OwnerRequests.Remove(entity);
-                await context.SaveChangesAsync();
-            }
+        public Task MarkAsProcessedAsync(Guid id)
+        {
+            return context.OwnerRequests.Where(x => x.Id == id).ExecuteUpdateAsync(s => s.SetProperty(x => x.IsProcessed, true));
         }
     }
 }

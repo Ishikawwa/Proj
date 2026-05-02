@@ -4,15 +4,15 @@ using MediatR;
 
 namespace Application.Behaviour.User
 {
-    public class CreateUserCommand : IRequest<Guid>
+    public record CreateUserCommand : IRequest<UserEntity>
     {
         public string Nickname { get; set; }
-        public string AvatarUrl { get; set; }
+        public string? AvatarUrl { get; set; }
     }
 
-    public sealed class CreateUserCommandHandler(IUserRepository repository) : IRequestHandler<CreateUserCommand, Guid>
+    public sealed class CreateUserCommandHandler(IUserRepository repository) : IRequestHandler<CreateUserCommand, UserEntity>
     {
-        public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+        public async Task<UserEntity> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
             UserEntity entity = new()
             {
@@ -24,7 +24,7 @@ namespace Application.Behaviour.User
 
             await repository.AddAsync(entity);
 
-            return entity.Id;
+            return entity;
         }
     }
 }

@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Behaviour.User
 {
-    public class GetUsersQuery : IRequest<List<UserEntity>>
+    public record GetUsersQuery : IRequest<List<UserEntity>>
     {
         public string? NicknameFilter { get; set; }
     }
@@ -20,5 +20,5 @@ namespace Application.Behaviour.User
 
             return users;
         }
-    }  
+    }
 }

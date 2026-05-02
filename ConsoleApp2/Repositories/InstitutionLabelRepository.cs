@@ -12,20 +12,14 @@ namespace Persistence.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<List<InstitutionLabelEntity>> GetByInstitutionIdAsync(Guid institutionId)
+        public Task<List<InstitutionLabelEntity>> GetByInstitutionIdAsync(Guid institutionId)
         {
-            return await context.InstitutionLabels.Where(x => x.InstitutionId == institutionId).ToListAsync();
+            return context.InstitutionLabels.Where(x => x.InstitutionId == institutionId).ToListAsync();
         }
 
-        public async Task DeleteAsync(Guid institutionId)
+        public Task DeleteAsync(Guid institutionId)
         {
-            List<InstitutionLabelEntity> entities = await context.InstitutionLabels.Where(x => x.InstitutionId == institutionId).ToListAsync();
-
-            if (entities.Any())
-            {
-                context.InstitutionLabels.RemoveRange(entities);
-                await context.SaveChangesAsync();
-            }
+            return context.InstitutionLabels.Where(x => x.InstitutionId == institutionId).ExecuteDeleteAsync();
         }
     }
 }

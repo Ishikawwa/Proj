@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
     public class ReviewEntity
     {
@@ -17,5 +11,6 @@ namespace Domain.Entities
         public int Score { get; set; }
         public DateTime CreatedAt { get; set; }
         public List<ReviewScoreEntity> ReviewScore { get; set; }
+        public bool IsBanned { get; set; }
     }
 }

@@ -12,20 +12,14 @@ namespace Persistence.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<ReviewScoreEntity> GetByIdAsync(Guid id)
+        public Task<ReviewScoreEntity?> GetByIdAsync(Guid id)
         {
-            return await context.ReviewScores.FirstOrDefaultAsync(x => x.Id == id);
+            return context.ReviewScores.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public Task DeleteAsync(Guid id)
         {
-            ReviewScoreEntity entity = await context.ReviewScores.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (entity != null)
-            {
-                context.ReviewScores.Remove(entity);
-                await context.SaveChangesAsync();
-            }
+            return context.ReviewScores.Where(x => x.Id == id).ExecuteDeleteAsync();
         }
     }
 }

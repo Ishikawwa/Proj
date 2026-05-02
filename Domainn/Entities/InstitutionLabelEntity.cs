@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Enums;
 
 namespace Domain.Entities
 {
@@ -11,6 +6,6 @@ namespace Domain.Entities
     {
         public Guid InstitutionId { get; set; }
         public InstitutionEntity Institution { get; set; }
-        public Label Label { get; set; }
+        public LabelTypeEnum Label { get; set; }
     }
 }

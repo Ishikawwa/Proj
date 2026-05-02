@@ -4,15 +4,15 @@ using MediatR;
 
 namespace Application.Behaviour.Institution
 {
-    public class AddInFavoriteListCommand : IRequest<Guid>
+    public record AddInFavoriteListCommand : IRequest
     {
         public Guid UserId { get; set; }
         public Guid InstitutionId { get; set; }
     }
 
-    public sealed class AddInFavoreListCommandHandler(IFavouriteInstitutionRepository repository) : IRequestHandler<AddInFavoriteListCommand, Guid>
+    public sealed class AddInFavoreListCommandHandler(IFavouriteInstitutionRepository repository) : IRequestHandler<AddInFavoriteListCommand>
     {
-        public async Task<Guid> Handle(AddInFavoriteListCommand request, CancellationToken cancellationToken)
+        public async Task Handle(AddInFavoriteListCommand request, CancellationToken cancellationToken)
         {
             FavouriteInstitutionEntity entity = new()
             {
@@ -23,7 +23,6 @@ namespace Application.Behaviour.Institution
 
             await repository.AddAsync(entity);
 
-            return entity.Id;
         }
     }
 }

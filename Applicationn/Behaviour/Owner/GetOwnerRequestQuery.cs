@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Behaviour.OwnerRequest
 {
-    public class GetOwnerRequestsQuery : IRequest<List<OwnerRequestEntity>>
+    public record GetOwnerRequestsQuery : IRequest<List<OwnerRequestEntity>>
     {
     }
 
@@ -12,7 +12,7 @@ namespace Application.Behaviour.OwnerRequest
     {
         public async Task<List<OwnerRequestEntity>> Handle(GetOwnerRequestsQuery request, CancellationToken cancellationToken)
         {
-            return await repository.GetAllAsync();
+            return await repository.GetPendingAsync();
         }
     }
 }

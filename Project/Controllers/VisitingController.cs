@@ -1,7 +1,8 @@
 ﻿using Application.Behaviour.Visiting;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Project.DTO;
+using Project.DTO.UserVisitingDto;
 
 namespace Project.Controllers
 {
@@ -10,11 +11,8 @@ namespace Project.Controllers
     public class VisitingController(IMediator mediator) : ControllerBase
     {
         [HttpPost]
-        public async Task<Guid> Create(CreateVisitingDto dto)
-            => await mediator.Send(new CreateVisitingInstitutionCommand
-            {
-                UserId = dto.UserId,
-                InstitutionId = dto.InstitutionId
-            });
+        public async Task<VisitingDto> Create([FromBody] CreateVisitingDto dto)
+            => (await mediator.Send(dto.Adapt<CreateVisitingInstitutionCommand>()))
+                .Adapt<VisitingDto>();
     }
 }

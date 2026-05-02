@@ -1,8 +1,8 @@
 ﻿using Application.Behaviour.Review;
-using Domain.Entities;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Project.DTO;
+using Project.DTO.ReviewDto;
 
 namespace Project.Controllers
 {
@@ -11,43 +11,29 @@ namespace Project.Controllers
     public class ReviewController(IMediator mediator) : ControllerBase
     {
         [HttpPost]
-        public async Task<Guid> Create(CreateReviewDto dto)
-            => await mediator.Send(new CreateReviewCommand
-            {
-                UserId = dto.UserId,
-                InstitutionId = dto.InstitutionId,
-                Comment = dto.Comment,
-                Score = dto.Score
-            });
+        public async Task<ReviewDto> Create([FromBody] ReviewToCreateDto dto)
+            => (await mediator.Send(dto.Adapt<CreateReviewCommand>()))
+                .Adapt<ReviewDto>();
 
         [HttpGet("institution/{institutionId}")]
-        public async Task<List<ReviewEntity>> GetByInstitution(Guid institutionId)
-            => await mediator.Send(new GetReviewsByInstitutionIdQuery { InstitutionId = institutionId });
+        public async Task<List<ReviewDto>> GetByInstitution([FromRoute] Guid institutionId)
+            => (await mediator.Send(new GetReviewsByInstitutionIdQuery { InstitutionId = institutionId }))
+                .Adapt<List<ReviewDto>>();
 
         [HttpPut]
-        public async Task Update(UpdateReviewDto dto)
-            => await mediator.Send(new UpdateReviewCommand
-            {
-                Id = dto.Id,
-                Comment = dto.Comment,
-                Score = dto.Score
-            });
+        public async Task Update([FromBody] ReviewToUpdateDto dto)
+            => await mediator.Send(dto.Adapt<UpdateReviewCommand>());
 
         [HttpDelete("{id}")]
-        public async Task Delete(Guid id, [FromQuery] bool isArchive = false)
-            => await mediator.Send(new DeleteReviewCommand { Id = id, IsArchive = isArchive });
+        public async Task Delete([FromRoute] Guid id)
+            => await mediator.Send(new DeleteReviewCommand { Id = id, IsArchive = true });
 
         [HttpPut("{id}/ban")]
-        public async Task Ban(Guid id, [FromQuery] bool isBanned= true)
-            => await mediator.Send(new BanReviewCommand { Id = id, IsBanned = isBanned});
+        public async Task Ban([FromRoute] Guid id)
+            => await mediator.Send(new BanReviewCommand { Id = id, IsBanned = true });
 
-        [HttpPost("{reviewId}/score")]
-        public async Task<Guid> Score(Guid reviewId, ScoreReviewDto dto)
-            => await mediator.Send(new ScoreReviewCommand
-            {
-                ReviewId = reviewId,
-                UserId = dto.UserId,
-                IsLiked = dto.IsLiked
-            });
+        [HttpPost("{reviewId}/vote")]
+        public async Task<Guid> VoteOnReview([FromRoute] Guid reviewId, [FromBody] ReviewScoreDto dto)
+            => (await mediator.Send(dto.Adapt<ScoreReviewCommand>() with { ReviewId = reviewId })).Id;
     }
 }

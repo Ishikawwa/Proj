@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Behaviour.User
 {
-    public class GetUserByIdQuery : IRequest<UserEntity>
+    public record GetUserByIdQuery : IRequest<UserEntity>
     {
         public Guid Id { get; set; }
     }

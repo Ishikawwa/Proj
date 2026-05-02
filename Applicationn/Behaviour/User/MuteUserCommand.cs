@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Behaviour.User
 {
-    public class MuteUserCommand : IRequest
+    public record MuteUserCommand : IRequest
     {
         public Guid Id { get; set; }
     }

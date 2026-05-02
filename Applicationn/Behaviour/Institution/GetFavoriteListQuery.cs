@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Behaviour.Institution
 {
-    public class GetFavoriteListQuery : IRequest<List<FavouriteInstitutionEntity>>
+    public record GetFavoriteListQuery : IRequest<List<FavouriteInstitutionEntity>>
     {
         public Guid UserId { get; set; }
     }

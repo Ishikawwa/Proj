@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Behaviour.Institution
 {
-    public class GetInstitutionQuery : IRequest<List<InstitutionEntity>>
+    public record GetInstitutionQuery : IRequest<List<InstitutionEntity>>
     {
     }
 

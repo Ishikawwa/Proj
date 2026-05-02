@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Behaviour.ReviewReport
 {
-    public class GetReviewReportQuery : IRequest<List<SpamReportEntity>>
+    public record GetReviewReportQuery : IRequest<List<SpamReportEntity>>
     {
     }
 
@@ -12,7 +12,7 @@ namespace Application.Behaviour.ReviewReport
     {
         public async Task<List<SpamReportEntity>> Handle(GetReviewReportQuery request, CancellationToken cancellationToken)
         {
-            return await repository.GetAllAsync();
+            return await repository.GetPendingAsync();
         }
     }
 }

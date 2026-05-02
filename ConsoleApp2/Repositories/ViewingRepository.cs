@@ -12,20 +12,14 @@ namespace Persistence.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<List<ViewingEntity>> GetByInstitutionIdAsync(Guid institutionId)
+        public Task<List<ViewingEntity>> GetByInstitutionIdAsync(Guid institutionId)
         {
-            return await context.Viewings.Where(x => x.InstitutionId == institutionId).ToListAsync();
+            return context.Viewings.Where(x => x.InstitutionId == institutionId).ToListAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public Task DeleteAsync(Guid id)
         {
-            ViewingEntity entity = await context.Viewings.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (entity != null)
-            {
-                context.Viewings.Remove(entity);
-                await context.SaveChangesAsync();
-            }
+            return context.Viewings.Where(x => x.Id == id).ExecuteDeleteAsync();
         }
     }
 }
