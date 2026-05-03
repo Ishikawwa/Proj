@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.Enums;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.Institution
@@ -10,8 +11,19 @@ namespace Application.Behaviour.Institution
         public LabelTypeEnum Label { get; set; }
     }
 
-    public sealed class RemoveLabelFromInstitutionCommandHandler(IInstitutionRepository repository)
-        : IRequestHandler<RemoveLabelFromInstitutionCommand>
+    public class RemoveLabelFromInstitutionCommandValidator : AbstractValidator<RemoveLabelFromInstitutionCommand>
+    {
+        public RemoveLabelFromInstitutionCommandValidator()
+        {
+            RuleFor(x => x.InstitutionId)
+                .NotEmpty().WithMessage("InstitutionId обязателен");
+
+            RuleFor(x => x.Label)
+                .IsInEnum().WithMessage("Недопустимый тип лейбла");
+        }
+    }
+
+    public sealed class RemoveLabelFromInstitutionCommandHandler(IInstitutionRepository repository) : IRequestHandler<RemoveLabelFromInstitutionCommand>
     {
         public async Task Handle(RemoveLabelFromInstitutionCommand request, CancellationToken cancellationToken)
         {

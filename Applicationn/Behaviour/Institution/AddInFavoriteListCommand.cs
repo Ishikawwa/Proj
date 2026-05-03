@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Repositories;
 using Domain.Entities;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.Institution
@@ -8,6 +9,18 @@ namespace Application.Behaviour.Institution
     {
         public Guid UserId { get; set; }
         public Guid InstitutionId { get; set; }
+    }
+
+    public class AddInFavoriteListCommandValidator : AbstractValidator<AddInFavoriteListCommand>
+    {
+        public AddInFavoriteListCommandValidator()
+        {
+            RuleFor(x => x.UserId)
+                .NotEmpty().WithMessage("UserId обязателен");
+
+            RuleFor(x => x.InstitutionId)
+                .NotEmpty().WithMessage("InstitutionId обязателен");
+        }
     }
 
     public sealed class AddInFavoreListCommandHandler(IFavouriteInstitutionRepository repository) : IRequestHandler<AddInFavoriteListCommand>

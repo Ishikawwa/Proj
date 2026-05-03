@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.Review
@@ -6,6 +7,15 @@ namespace Application.Behaviour.Review
     public record GetReviewsByInstitutionIdQuery : IRequest<List<ReviewEntity>>
     {
         public Guid InstitutionId { get; set; }
+    }
+
+    public class GetReviewsByInstitutionIdQueryValidator : AbstractValidator<GetReviewsByInstitutionIdQuery>
+    {
+        public GetReviewsByInstitutionIdQueryValidator()
+        {
+            RuleFor(x => x.InstitutionId)
+                .NotEmpty().WithMessage("InstitutionId обязателен");
+        }
     }
 
     public sealed class GetReviewsByInstitutionIdQueryHandler(IReviewRepository repository) : IRequestHandler<GetReviewsByInstitutionIdQuery, List<ReviewEntity>>

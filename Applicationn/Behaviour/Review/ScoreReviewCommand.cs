@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Repositories;
 using Domain.Entities;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.Review
@@ -9,6 +10,18 @@ namespace Application.Behaviour.Review
         public Guid ReviewId { get; set; }
         public Guid UserId { get; set; }
         public bool IsLiked { get; set; }
+    }
+
+    public class ScoreReviewCommandValidator : AbstractValidator<ScoreReviewCommand>
+    {
+        public ScoreReviewCommandValidator()
+        {
+            RuleFor(x => x.ReviewId)
+                .NotEmpty().WithMessage("ReviewId обязателен");
+
+            RuleFor(x => x.UserId)
+                .NotEmpty().WithMessage("UserId обязателен");
+        }
     }
 
     public sealed class ScoreReviewCommandHandler(IReviewScoreRepository repository) : IRequestHandler<ScoreReviewCommand, ReviewScoreEntity>

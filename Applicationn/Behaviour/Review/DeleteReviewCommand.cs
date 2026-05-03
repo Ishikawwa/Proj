@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 
 namespace Application.Behaviour.Review
 {
@@ -6,6 +7,15 @@ namespace Application.Behaviour.Review
     {
         public Guid Id { get; set; }
         public bool IsArchive { get; set; }
+    }
+
+    public class DeleteReviewCommandValidator : AbstractValidator<DeleteReviewCommand>
+    {
+        public DeleteReviewCommandValidator()
+        {
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("Id отзыва обязателен");
+        }
     }
 
     public sealed class DeleteReviewCommandHandler(IReviewRepository repository) : IRequestHandler<DeleteReviewCommand>
