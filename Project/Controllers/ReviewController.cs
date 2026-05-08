@@ -26,11 +26,11 @@ namespace Project.Controllers
 
         [HttpDelete("{id}")]
         public async Task Delete([FromRoute] Guid id)
-            => await mediator.Send(new DeleteReviewCommand { Id = id, IsArchive = true });
+            => await mediator.Send(new DeleteReviewCommand { Id = id });
 
         [HttpPut("{id}/ban")]
         public async Task Ban([FromRoute] Guid id)
-            => await mediator.Send(new BanReviewCommand { Id = id, IsBanned = true });
+            => await mediator.Send(new BanReviewCommand { Id = id });
 
         [HttpPost("{reviewId}/vote")]
         public async Task<Guid> VoteOnReview([FromRoute] Guid reviewId, [FromBody] ReviewScoreDto dto)

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Applicationn\Application.csproj" />
+    <ProjectReference Include="..\ConsoleApp2\Persistence.csproj" />
     <ProjectReference Include="..\Domainn\Domain.csproj" />
   </ItemGroup>
 

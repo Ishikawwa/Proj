@@ -10,9 +10,9 @@ namespace Application.Behaviour
             if (!validators.Any())
                 return await next();
 
-            var context = new ValidationContext<TRequest>(request);
+            ValidationContext<TRequest> context = new(request);
 
-            var failures = validators
+            List<FluentValidation.Results.ValidationFailure> failures = validators
                 .Select(v => v.Validate(context))
                 .SelectMany(r => r.Errors)
                 .Where(f => f != null)
