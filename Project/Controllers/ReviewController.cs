@@ -1,4 +1,5 @@
 ﻿using Application.Behaviour.Review;
+using Application.Utils;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -11,14 +12,14 @@ namespace Project.Controllers
     public class ReviewController(IMediator mediator) : ControllerBase
     {
         [HttpPost]
-        public async Task<ReviewDto> Create([FromBody] ReviewToCreateDto dto)
+        public async Task<ResponseContract<ReviewDto>> Create([FromBody] ReviewToCreateDto dto)
             => (await mediator.Send(dto.Adapt<CreateReviewCommand>()))
-                .Adapt<ReviewDto>();
+                .Adapt<ResponseContract<ReviewDto>>();
 
         [HttpGet("institution/{institutionId}")]
-        public async Task<List<ReviewDto>> GetByInstitution([FromRoute] Guid institutionId)
+        public async Task<ResponseContract<List<ReviewDto>>> GetByInstitution([FromRoute] Guid institutionId)
             => (await mediator.Send(new GetReviewsByInstitutionIdQuery { InstitutionId = institutionId }))
-                .Adapt<List<ReviewDto>>();
+                .Adapt<ResponseContract<List<ReviewDto>>>();
 
         [HttpPut]
         public async Task Update([FromBody] ReviewToUpdateDto dto)

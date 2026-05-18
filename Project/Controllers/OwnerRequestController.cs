@@ -1,4 +1,5 @@
 ﻿using Application.Behaviour.OwnerRequest;
+using Application.Utils;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -11,14 +12,14 @@ namespace Project.Controllers
     public class OwnerRequestController(IMediator mediator) : ControllerBase
     {
         [HttpPost]
-        public async Task<OwnerRequestDto> Create([FromBody] OwnerRequestToCreateDto dto)
+        public async Task<ResponseContract<OwnerRequestDto>> Create([FromBody] OwnerRequestToCreateDto dto)
             => (await mediator.Send(dto.Adapt<CreateOwnerRequestCommand>()))
-                .Adapt<OwnerRequestDto>();
+                .Adapt<ResponseContract<OwnerRequestDto>>();
 
         [HttpGet]
-        public async Task<List<OwnerRequestDto>> GetAll()
+        public async Task<ResponseContract<List<OwnerRequestDto>>> GetAll()
             => (await mediator.Send(new GetOwnerRequestsQuery()))
-                .Adapt<List<OwnerRequestDto>>();
+                .Adapt<ResponseContract<List<OwnerRequestDto>>>();
 
         [HttpPut("{id}/process")]
         public async Task MarkAsProcessed([FromRoute] Guid id)

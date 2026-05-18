@@ -1,4 +1,5 @@
 ﻿using Application.Behaviour.User;
+using Application.Utils;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -11,19 +12,19 @@ namespace Project.Controllers
     public class UserController(IMediator mediator) : ControllerBase
     {
         [HttpPost]
-        public async Task<UserDto> Create([FromBody] UserToCreateDto dto)
+        public async Task<ResponseContract<UserDto>> Create([FromBody] UserToCreateDto dto)
             => (await mediator.Send(dto.Adapt<CreateUserCommand>()))
-                .Adapt<UserDto>();
+                .Adapt<ResponseContract<UserDto>>();
 
         [HttpGet("{id}")]
-        public async Task<UserDto> GetById([FromRoute] Guid id)
+        public async Task<ResponseContract<UserDto>> GetById([FromRoute] Guid id)
             => (await mediator.Send(new GetUserByIdQuery { Id = id }))
-                .Adapt<UserDto>();
+                .Adapt<ResponseContract<UserDto>>();
 
         [HttpGet]
-        public async Task<List<UserDto>> GetAll([FromQuery] string? nicknameFilter = null)
+        public async Task<ResponseContract<List<UserDto>>> GetAll([FromQuery] string? nicknameFilter = null)
             => (await mediator.Send(new GetUsersQuery { NicknameFilter = nicknameFilter }))
-                .Adapt<List<UserDto>>();
+                .Adapt<ResponseContract<List<UserDto>>>();
 
         [HttpPut("{id}/ban")]
         public async Task Ban([FromRoute] Guid id)

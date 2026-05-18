@@ -1,9 +1,12 @@
-﻿using FluentValidation;
+﻿using Application.Utils;
+using Domain.Constants;
+using Domain.Entities;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.Institution
 {
-    public record AssignOwnerToInstitutionCommand : IRequest
+    public record AssignOwnerToInstitutionCommand : IRequest<ResponseContract<Unit>>
     {
         public Guid InstitutionId { get; set; }
         public Guid OwnerId { get; set; }
@@ -21,11 +24,24 @@ namespace Application.Behaviour.Institution
         }
     }
 
-    public sealed class AssignOwnerToInstitutionCommandHandler(IInstitutionRepository repository) : IRequestHandler<AssignOwnerToInstitutionCommand>
+    public sealed class AssignOwnerToInstitutionCommandHandler(IInstitutionRepository institutionRepository) : IRequestHandler<AssignOwnerToInstitutionCommand, ResponseContract<Unit>>
     {
-        public async Task Handle(AssignOwnerToInstitutionCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseContract<Unit>> Handle(AssignOwnerToInstitutionCommand request, CancellationToken cancellationToken)
         {
-            await repository.AssignOwnerAsync(request.InstitutionId, request.OwnerId);
+            InstitutionEntity institution = await institutionRepository.GetByIdAsync(request.InstitutionId);
+
+            if (institution == null)
+            {
+                return new ResponseContract<Unit>(ErrorCodes.InstitutionNotFound);
+            }
+
+            if (institution.OwnerId is null)
+            {
+                return new ResponseContract<Unit>(ErrorCodes.OwnerNotFound);
+            }
+            await institutionRepository.AssignOwnerAsync(request.InstitutionId, request.OwnerId);
+
+            return new ResponseContract<Unit>(Unit.Value);
         }
     }
 }

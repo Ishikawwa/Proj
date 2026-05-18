@@ -1,4 +1,5 @@
 ﻿using Application.Behaviour.Institution;
+using Application.Utils;
 using Domain.Enums;
 using Mapster;
 using MediatR;
@@ -13,21 +14,21 @@ namespace Project.Controllers
     public class InstitutionController(IMediator mediator) : ControllerBase
     {
         [HttpPost]
-        public async Task<InstitutionDto> Create([FromBody] InstitutionToCreateDto dto)
-            => (await mediator.Send(dto.Adapt<CreateInstitutionCommand>())).Adapt<InstitutionDto>();
+        public async Task<ResponseContract<InstitutionDto>> Create([FromBody] ResponseContract<InstitutionToCreateDto> dto)
+            => (await mediator.Send(dto.Adapt<ResponseContract<CreateInstitutionCommand>>())).Adapt<ResponseContract<InstitutionDto>>();
 
         [HttpGet]
-        public async Task<List<InstitutionDto>> GetAll()
-            => (await mediator.Send(new GetInstitutionQuery())).Adapt<List<InstitutionDto>>();
+        public async Task<ResponseContract<List<InstitutionDto>>> GetAll()
+            => (await mediator.Send(new GetInstitutionQuery())).Adapt<ResponseContract<List<InstitutionDto>>>();
 
         [HttpGet("{id}")]
-        public async Task<InstitutionDto> GetById([FromRoute] Guid id)
-            => (await mediator.Send(new GetInstitutionByIdCommand { Id = id })).Adapt<InstitutionDto>();
+        public async Task<ResponseContract<InstitutionDto>> GetById([FromRoute] Guid id)
+            => (await mediator.Send(new GetInstitutionByIdCommand { Id = id })).Adapt<ResponseContract<InstitutionDto>>();
 
         [HttpGet("owner/{ownerId}")]
-        public async Task<List<InstitutionDto>> GetByOwnerId([FromRoute] Guid ownerId)
+        public async Task<ResponseContract<List<InstitutionDto>>> GetByOwnerId([FromRoute] Guid ownerId)
             => (await mediator.Send(new GetInstitutionByOwnerIdQuery { OwnerId = ownerId }))
-                .Adapt<List<InstitutionDto>>();
+                .Adapt<ResponseContract<List<InstitutionDto>>>();
 
         [HttpPut]
         public async Task Update([FromBody] InstitutionToUpdateDto dto)

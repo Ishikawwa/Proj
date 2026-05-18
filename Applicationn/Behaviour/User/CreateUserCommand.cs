@@ -1,12 +1,15 @@
 ﻿using Application.Interfaces.Repositories;
+using Application.Utils;
+using Domain.Constants;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.User
 {
-    public record CreateUserCommand : IRequest<UserEntity>
+    public record CreateUserCommand : IRequest<ResponseContract<UserEntity>>
     {
+        public Guid Id { get; set; } // +
         public string Nickname { get; set; }
         public string? AvatarUrl { get; set; }
     }
@@ -27,10 +30,27 @@ namespace Application.Behaviour.User
         }
     }
 
-    public sealed class CreateUserCommandHandler(IUserRepository repository) : IRequestHandler<CreateUserCommand, UserEntity>
+    public sealed class CreateUserCommandHandler(IUserRepository userRepository) : IRequestHandler<CreateUserCommand, ResponseContract<UserEntity>>
     {
-        public async Task<UserEntity> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseContract<UserEntity>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
+            UserEntity user = await userRepository.GetByIdAsync(request.Id);
+
+            if (user == null)
+            {
+                return new ResponseContract<UserEntity>(ErrorCodes.UserNotFound);
+            }
+
+            if (user.IsMuted)
+            {
+                return new ResponseContract<UserEntity>(ErrorCodes.UserIsMuted);
+            }
+
+            if (user.IsBanned)
+            {
+                return new ResponseContract<UserEntity>(ErrorCodes.UserIsBanned);
+            }
+
             UserEntity entity = new()
             {
                 Id = Guid.NewGuid(),
@@ -39,9 +59,9 @@ namespace Application.Behaviour.User
                 CreatedAt = DateTime.UtcNow
             };
 
-            await repository.AddAsync(entity);
+            await userRepository.AddAsync(entity);
 
-            return entity;
+            return new ResponseContract<UserEntity>(entity);
         }
     }
 }

@@ -1,12 +1,15 @@
-﻿using Domain.Entities;
+﻿using Application.Utils;
+using Domain.Constants;
+using Domain.Entities;
 using Domain.Enums;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.Institution
 {
-    public record CreateInstitutionCommand : IRequest<InstitutionEntity>
+    public record CreateInstitutionCommand : IRequest<ResponseContract<InstitutionEntity>>
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public long Longitude { get; set; }
         public long Latitude { get; set; }
@@ -50,10 +53,17 @@ namespace Application.Behaviour.Institution
         }
     }
 
-    public sealed class CreateInstitutionCommandHandler(IInstitutionRepository repository) : IRequestHandler<CreateInstitutionCommand, InstitutionEntity>
+    public sealed class CreateInstitutionCommandHandler(IInstitutionRepository institutionRepository) : IRequestHandler<CreateInstitutionCommand, ResponseContract<InstitutionEntity>>
     {
-        public async Task<InstitutionEntity> Handle(CreateInstitutionCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseContract<InstitutionEntity>> Handle(CreateInstitutionCommand request, CancellationToken cancellationToken)
         {
+            InstitutionEntity institution = await institutionRepository.GetByIdAsync(request.Id);
+
+            if (institution == null)
+            {
+                return new ResponseContract<InstitutionEntity>(ErrorCodes.InstitutionNotFound);
+            }
+
             InstitutionEntity entity = new()
             {
                 Id = Guid.NewGuid(),
@@ -69,9 +79,9 @@ namespace Application.Behaviour.Institution
                 Labels = new List<LabelTypeEnum>()
             };
 
-            await repository.AddAsync(entity);
+            await institutionRepository.AddAsync(entity);
 
-            return entity;
+            return new ResponseContract<InstitutionEntity>(entity);
         }
     }
 }

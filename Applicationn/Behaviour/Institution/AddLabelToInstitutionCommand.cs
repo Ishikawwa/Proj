@@ -1,11 +1,13 @@
-﻿using Domain.Entities;
+﻿using Application.Utils;
+using Domain.Constants;
+using Domain.Entities;
 using Domain.Enums;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.Institution
 {
-    public record AddLabelToInstitutionCommand : IRequest
+    public record AddLabelToInstitutionCommand : IRequest<ResponseContract<Unit>>
     {
         public Guid InstitutionId { get; set; }
         public LabelTypeEnum Label { get; set; }
@@ -23,19 +25,23 @@ namespace Application.Behaviour.Institution
         }
     }
 
-    public sealed class AddLabelToInstitutionCommandHandler(IInstitutionRepository repository) : IRequestHandler<AddLabelToInstitutionCommand>
+    public sealed class AddLabelToInstitutionCommandHandler(IInstitutionRepository repository) : IRequestHandler<AddLabelToInstitutionCommand, ResponseContract<Unit>>
     {
-        public async Task Handle(AddLabelToInstitutionCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseContract<Unit>> Handle(AddLabelToInstitutionCommand request, CancellationToken cancellationToken)
         {
             InstitutionEntity? institution = await repository.GetByIdAsync(request.InstitutionId);
 
             if (institution == null)
-                throw new InvalidOperationException($"Заведение с Id={request.InstitutionId} не найдено.");
+            {
+                return new ResponseContract<Unit>(ErrorCodes.InstitutionNotFound);
+            }
 
             if (!institution.Labels.Contains(request.Label))
                 institution.Labels.Add(request.Label);
 
             await repository.UpdateAsync(institution);
+
+            return new ResponseContract<Unit>(Unit.Value);
         }
     }
 }

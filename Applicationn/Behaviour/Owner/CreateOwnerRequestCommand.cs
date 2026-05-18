@@ -1,11 +1,13 @@
 ﻿using Application.Interfaces.Repositories;
+using Application.Utils;
+using Domain.Constants;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.OwnerRequest
 {
-    public record CreateOwnerRequestCommand : IRequest<OwnerRequestEntity>
+    public record CreateOwnerRequestCommand : IRequest<ResponseContract<OwnerRequestEntity>>
     {
         public Guid UserId { get; set; }
         public Guid InstitutionId { get; set; }
@@ -27,10 +29,24 @@ namespace Application.Behaviour.OwnerRequest
         }
     }
 
-    public sealed class CreateOwnerRequestCommandHandler(IOwnerRequestRepository repository) : IRequestHandler<CreateOwnerRequestCommand, OwnerRequestEntity>
+    public sealed class CreateOwnerRequestCommandHandler(
+        IOwnerRequestRepository repository,
+        IUserRepository userRepository) : IRequestHandler<CreateOwnerRequestCommand, ResponseContract<OwnerRequestEntity>>
     {
-        public async Task<OwnerRequestEntity> Handle(CreateOwnerRequestCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseContract<OwnerRequestEntity>> Handle(CreateOwnerRequestCommand request, CancellationToken cancellationToken)
         {
+            UserEntity user = await userRepository.GetByIdAsync(request.UserId);
+
+            if (user == null)
+            {
+                return new ResponseContract<OwnerRequestEntity>(ErrorCodes.UserNotFound);
+            }
+
+            if (user.IsBanned)
+            {
+                return new ResponseContract<OwnerRequestEntity>(ErrorCodes.UserIsBanned);
+            }
+
             OwnerRequestEntity entity = new()
             {
                 Id = Guid.NewGuid(),
@@ -41,7 +57,7 @@ namespace Application.Behaviour.OwnerRequest
 
             await repository.AddAsync(entity);
 
-            return entity;
+            return new ResponseContract<OwnerRequestEntity>(entity);
         }
     }
 }

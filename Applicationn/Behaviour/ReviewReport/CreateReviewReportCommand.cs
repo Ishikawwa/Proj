@@ -1,11 +1,13 @@
 ﻿using Application.Interfaces.Repositories;
+using Application.Utils;
+using Domain.Constants;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.ReviewReport
 {
-    public record CreateReviewReportCommand : IRequest<SpamReportEntity>
+    public record CreateReviewReportCommand : IRequest<ResponseContract<SpamReportEntity>>
     {
         public Guid UserId { get; set; }
         public Guid ReviewId { get; set; }
@@ -27,13 +29,15 @@ namespace Application.Behaviour.ReviewReport
         }
     }
 
-    public sealed class CreateReviewReportCommandHandler(ISpamReportRepository repository, IReviewRepository reviewRepository) : IRequestHandler<CreateReviewReportCommand, SpamReportEntity>
+    public sealed class CreateReviewReportCommandHandler(ISpamReportRepository repository, IReviewRepository reviewRepository) : IRequestHandler<CreateReviewReportCommand, ResponseContract<SpamReportEntity>>
     {
-        public async Task<SpamReportEntity> Handle(CreateReviewReportCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseContract<SpamReportEntity>> Handle(CreateReviewReportCommand request, CancellationToken cancellationToken)
         {
             ReviewEntity? review = await reviewRepository.GetByIdAsync(request.ReviewId);
             if (review is null)
-                throw new InvalidOperationException($"Отзыв с Id={request.ReviewId} не найден");
+            {
+                return new ResponseContract<SpamReportEntity>(ErrorCodes.ReviewNotFound);
+            }
 
             SpamReportEntity entity = new()
             {
@@ -45,7 +49,7 @@ namespace Application.Behaviour.ReviewReport
 
             await repository.AddAsync(entity);
 
-            return entity;
+            return new ResponseContract<SpamReportEntity>(entity);
         }
     }
 }

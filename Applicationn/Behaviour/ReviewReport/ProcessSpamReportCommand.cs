@@ -1,10 +1,13 @@
 ﻿using Application.Interfaces.Repositories;
+using Application.Utils;
+using Domain.Constants;
+using Domain.Entities;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.ReviewReport
 {
-    public record ProcessSpamReportCommand : IRequest
+    public record ProcessSpamReportCommand : IRequest<ResponseContract<Unit>>
     {
         public Guid Id { get; set; }
     }
@@ -16,9 +19,27 @@ namespace Application.Behaviour.ReviewReport
                 .NotEmpty().WithMessage("Id жалобы обязателен");
         }
     }
-    public sealed class ProcessSpamReportCommandHandler(ISpamReportRepository repository) : IRequestHandler<ProcessSpamReportCommand>
+    public sealed class ProcessSpamReportCommandHandler(ISpamReportRepository spamReportRepository, IReviewRepository reviewRepository) : IRequestHandler<ProcessSpamReportCommand, ResponseContract<Unit>>
     {
-        public Task Handle(ProcessSpamReportCommand request, CancellationToken cancellationToken)
-            => repository.MarkAsProcessedAsync(request.Id);
+        public async Task<ResponseContract<Unit>> Handle(ProcessSpamReportCommand request, CancellationToken cancellationToken)
+        {
+            ReviewEntity review = await reviewRepository.GetByIdAsync(request.Id);
+
+            if (review == null)
+            {
+                return new ResponseContract<Unit>(ErrorCodes.ReviewNotFound);
+            }
+
+            if (review.IsBanned)
+            {
+                return new ResponseContract<Unit>(ErrorCodes.ReviewIsBanned);
+            }
+
+            spamReportRepository.MarkAsProcessedAsync(request.Id);
+
+            return new ResponseContract<Unit>(Unit.Value);
+        }
+
+
     }
 }

@@ -1,18 +1,21 @@
 ﻿using Application.Interfaces.Repositories;
+using Application.Utils;
 using Domain.Entities;
 using MediatR;
 
 namespace Application.Behaviour.OwnerRequest
 {
-    public record GetOwnerRequestsQuery : IRequest<List<OwnerRequestEntity>>
+    public record GetOwnerRequestsQuery : IRequest<ResponseContract<List<OwnerRequestEntity>>>
     {
     }
 
-    public sealed class GetOwnerRequestsQueryHandler(IOwnerRequestRepository repository) : IRequestHandler<GetOwnerRequestsQuery, List<OwnerRequestEntity>>
+    public sealed class GetOwnerRequestsQueryHandler(IOwnerRequestRepository repository) : IRequestHandler<GetOwnerRequestsQuery, ResponseContract<List<OwnerRequestEntity>>>
     {
-        public async Task<List<OwnerRequestEntity>> Handle(GetOwnerRequestsQuery request, CancellationToken cancellationToken)
+        public async Task<ResponseContract<List<OwnerRequestEntity>>> Handle(GetOwnerRequestsQuery request, CancellationToken cancellationToken)
         {
-            return await repository.GetPendingAsync();
+            await repository.GetPendingAsync();
+
+            return new ResponseContract<List<OwnerRequestEntity>>();
         }
     }
 }

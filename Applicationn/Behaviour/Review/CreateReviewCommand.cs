@@ -1,10 +1,13 @@
-﻿using Domain.Entities;
+﻿using Application.Interfaces.Repositories;
+using Application.Utils;
+using Domain.Constants;
+using Domain.Entities;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.Review
 {
-    public record CreateReviewCommand : IRequest<ReviewEntity>
+    public record CreateReviewCommand : IRequest<ResponseContract<ReviewEntity>>
     {
         public Guid UserId { get; set; }
         public Guid InstitutionId { get; set; }
@@ -30,10 +33,36 @@ namespace Application.Behaviour.Review
         }
     }
 
-    public sealed class CreateReviewCommandHandler(IReviewRepository repository) : IRequestHandler<CreateReviewCommand, ReviewEntity>
+    public sealed class CreateReviewCommandHandler(
+        IReviewRepository reviewRepository,
+        IUserRepository userRepository,
+        IInstitutionRepository institutionRepository) : IRequestHandler<CreateReviewCommand, ResponseContract<ReviewEntity>>
     {
-        public async Task<ReviewEntity> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseContract<ReviewEntity>> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
         {
+            UserEntity user = await userRepository.GetByIdAsync(request.UserId);
+            InstitutionEntity institution = await institutionRepository.GetByIdAsync(request.InstitutionId);
+
+            if (user == null)
+            {
+                return new ResponseContract<ReviewEntity>(ErrorCodes.UserNotFound);
+            }
+
+            if (user.IsBanned)
+            {
+                return new ResponseContract<ReviewEntity>(ErrorCodes.UserIsBanned);
+            }
+
+            if (user.IsMuted)
+            {
+                return new ResponseContract<ReviewEntity>(ErrorCodes.UserIsMuted);
+            }
+
+            if (institution == null)
+            {
+                return new ResponseContract<ReviewEntity>(ErrorCodes.InstitutionNotFound);
+            }
+
             ReviewEntity entity = new()
             {
                 Id = Guid.NewGuid(),
@@ -44,9 +73,9 @@ namespace Application.Behaviour.Review
                 CreatedAt = DateTime.UtcNow
             };
 
-            await repository.AddAsync(entity);
+            await reviewRepository.AddAsync(entity);
 
-            return entity;
+            return new ResponseContract<ReviewEntity>(entity);
         }
     }
 }

@@ -1,10 +1,12 @@
-﻿using Domain.Entities;
+﻿using Application.Utils;
+using Domain.Constants;
+using Domain.Entities;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.Institution
 {
-    public record GetInstitutionByIdCommand : IRequest<InstitutionEntity>
+    public record GetInstitutionByIdCommand : IRequest<ResponseContract<InstitutionEntity>>
     {
         public Guid Id { get; set; }
     }
@@ -18,11 +20,19 @@ namespace Application.Behaviour.Institution
         }
     }
 
-    public sealed class GetInstitutionByIdQueryHandler(IInstitutionRepository repository) : IRequestHandler<GetInstitutionByIdCommand, InstitutionEntity>
+    public sealed class GetInstitutionByIdQueryHandler(IInstitutionRepository repository) : IRequestHandler<GetInstitutionByIdCommand, ResponseContract<InstitutionEntity>>
     {
-        public async Task<InstitutionEntity> Handle(GetInstitutionByIdCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseContract<InstitutionEntity>> Handle(GetInstitutionByIdCommand request, CancellationToken cancellationToken)
         {
-            return await repository.GetByIdAsync(request.Id);
+            InstitutionEntity institution = await repository.GetByIdAsync(request.Id);
+            if (institution == null)
+            {
+                return new ResponseContract<InstitutionEntity>(ErrorCodes.InstitutionNotFound);
+            }
+
+            await repository.GetByIdAsync(request.Id);
+
+            return new ResponseContract<InstitutionEntity>(institution);
         }
     }
 }

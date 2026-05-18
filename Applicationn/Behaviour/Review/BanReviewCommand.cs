@@ -1,9 +1,12 @@
-﻿using FluentValidation;
+﻿using Application.Utils;
+using Domain.Constants;
+using Domain.Entities;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.Review
 {
-    public record BanReviewCommand : IRequest
+    public record BanReviewCommand : IRequest<ResponseContract<Unit>>
     {
         public Guid Id { get; set; }
         public bool IsBanned { get; set; }
@@ -18,11 +21,25 @@ namespace Application.Behaviour.Review
         }
     }
 
-    public sealed class BanReviewCommandHandler(IReviewRepository repository) : IRequestHandler<BanReviewCommand>
+    public sealed class BanReviewCommandHandler(IReviewRepository reviewRepository) : IRequestHandler<BanReviewCommand, ResponseContract<Unit>>
     {
-        public async Task Handle(BanReviewCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseContract<Unit>> Handle(BanReviewCommand request, CancellationToken cancellationToken)
         {
-            await repository.BanAsync(request.Id);
+            ReviewEntity review = await reviewRepository.GetByIdAsync(request.Id);
+
+            if (review == null)
+            {
+                return new ResponseContract<Unit>(ErrorCodes.ReviewNotFound);
+            }
+
+            if (review.IsBanned)
+            {
+                return new ResponseContract<Unit>(ErrorCodes.ReviewIsBanned);
+            }
+
+            await reviewRepository.BanAsync(request.Id);
+
+            return new ResponseContract<Unit>(Unit.Value);
         }
     }
 }

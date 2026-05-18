@@ -1,11 +1,13 @@
 ﻿using Application.Interfaces.Repositories;
+using Application.Utils;
+using Domain.Constants;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.Visiting
 {
-    public record CreateVisitingInstitutionCommand : IRequest<VisitingEntity>
+    public record CreateVisitingInstitutionCommand : IRequest<ResponseContract<VisitingEntity>>
     {
         public Guid UserId { get; set; }
         public Guid InstitutionId { get; set; }
@@ -21,10 +23,26 @@ namespace Application.Behaviour.Visiting
                 .NotEmpty().WithMessage("InstitutionId обязателен");
         }
     }
-    public sealed class CreateVisitingInstitutionCommandHandler(IVisitingRepository repository) : IRequestHandler<CreateVisitingInstitutionCommand, VisitingEntity>
+    public sealed class CreateVisitingInstitutionCommandHandler(
+        IVisitingRepository visitingRepository,
+        IInstitutionRepository institutionRepository,
+        IUserRepository userRepository) : IRequestHandler<CreateVisitingInstitutionCommand, ResponseContract<VisitingEntity>>
     {
-        public async Task<VisitingEntity> Handle(CreateVisitingInstitutionCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseContract<VisitingEntity>> Handle(CreateVisitingInstitutionCommand request, CancellationToken cancellationToken)
         {
+            UserEntity user = await userRepository.GetByIdAsync(request.UserId);
+            InstitutionEntity insitution = await institutionRepository.GetByIdAsync(request.InstitutionId);
+
+            if (insitution == null)
+            {
+                return new ResponseContract<VisitingEntity>(ErrorCodes.InstitutionNotFound);
+            }
+
+            if (user == null)
+            {
+                return new ResponseContract<VisitingEntity>(ErrorCodes.UserNotFound);
+            }
+
             VisitingEntity entity = new()
             {
                 Id = Guid.NewGuid(),
@@ -32,9 +50,9 @@ namespace Application.Behaviour.Visiting
                 InstitutionId = request.InstitutionId
             };
 
-            await repository.AddAsync(entity);
+            await visitingRepository.AddAsync(entity);
 
-            return entity;
+            return new ResponseContract<VisitingEntity>(entity);
         }
     }
 }

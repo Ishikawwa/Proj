@@ -1,10 +1,11 @@
 ﻿using Application.Interfaces.Repositories;
+using Application.Utils;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.OwnerRequest
 {
-    public record ProcessOwnerRequestCommand : IRequest
+    public record ProcessOwnerRequestCommand : IRequest<ResponseContract<Unit>>
     {
         public Guid Id { get; set; }
     }
@@ -16,9 +17,13 @@ namespace Application.Behaviour.OwnerRequest
                 .NotEmpty().WithMessage("Id запроса обязателен");
         }
     }
-    public sealed class ProcessOwnerRequestCommandHandler(IOwnerRequestRepository repository) : IRequestHandler<ProcessOwnerRequestCommand>
+    public sealed class ProcessOwnerRequestCommandHandler(IOwnerRequestRepository repository) : IRequestHandler<ProcessOwnerRequestCommand, ResponseContract<Unit>>
     {
-        public Task Handle(ProcessOwnerRequestCommand request, CancellationToken cancellationToken)
-            => repository.MarkAsProcessedAsync(request.Id);
+        public async Task<ResponseContract<Unit>> Handle(ProcessOwnerRequestCommand request, CancellationToken cancellationToken)
+        {
+            repository.MarkAsProcessedAsync(request.Id);
+
+            return new ResponseContract<Unit>(Unit.Value);
+        }
     }
 }

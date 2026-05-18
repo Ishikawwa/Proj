@@ -1,10 +1,12 @@
-﻿using Domain.Entities;
+﻿using Application.Utils;
+using Domain.Constants;
+using Domain.Entities;
 using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.Review
 {
-    public record UpdateReviewCommand : IRequest
+    public record UpdateReviewCommand : IRequest<ResponseContract<Unit>>
     {
         public Guid Id { get; set; }
         public string Comment { get; set; }
@@ -27,18 +29,22 @@ namespace Application.Behaviour.Review
         }
     }
 
-    public sealed class UpdateReviewCommandHandler(IReviewRepository repository) : IRequestHandler<UpdateReviewCommand>
+    public sealed class UpdateReviewCommandHandler(IReviewRepository repository) : IRequestHandler<UpdateReviewCommand, ResponseContract<Unit>>
     {
-        public async Task Handle(UpdateReviewCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseContract<Unit>> Handle(UpdateReviewCommand request, CancellationToken cancellationToken)
         {
-            ReviewEntity? entity = await repository.GetByIdAsync(request.Id);
-            if (entity == null)
-                throw new InvalidOperationException($"Отзыв с Id={request.Id} не найден.");
+            ReviewEntity? review = await repository.GetByIdAsync(request.Id);
+            if (review == null)
+            {
+                return new ResponseContract<Unit>(ErrorCodes.ReviewNotFound);
+            }
 
-            entity.Comment = request.Comment;
-            entity.Score = request.Score;
+            review.Comment = request.Comment;
+            review.Score = request.Score;
 
-            await repository.UpdateAsync(entity);
+            await repository.UpdateAsync(review);
+
+            return new ResponseContract<Unit>(Unit.Value);
         }
     }
 }

@@ -1,9 +1,12 @@
-﻿using FluentValidation;
+﻿using Application.Utils;
+using Domain.Constants;
+using Domain.Entities;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Behaviour.Review
 {
-    public record DeleteReviewCommand : IRequest
+    public record DeleteReviewCommand : IRequest<ResponseContract<Unit>>
     {
         public Guid Id { get; set; }
         public bool IsArchive { get; set; }
@@ -18,11 +21,25 @@ namespace Application.Behaviour.Review
         }
     }
 
-    public sealed class DeleteReviewCommandHandler(IReviewRepository repository) : IRequestHandler<DeleteReviewCommand>
+    public sealed class DeleteReviewCommandHandler(IReviewRepository reviewRepository) : IRequestHandler<DeleteReviewCommand, ResponseContract<Unit>>
     {
-        public async Task Handle(DeleteReviewCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseContract<Unit>> Handle(DeleteReviewCommand request, CancellationToken cancellationToken)
         {
-            await repository.DeleteAsync(request.Id);
+            ReviewEntity review = await reviewRepository.GetByIdAsync(request.Id);
+
+            if (review == null)
+            {
+                return new ResponseContract<Unit>(ErrorCodes.ReviewNotFound);
+            }
+
+            if (review.IsBanned)
+            {
+                return new ResponseContract<Unit>(ErrorCodes.ReviewIsBanned);
+            }
+
+            await reviewRepository.DeleteAsync(request.Id);
+
+            return new ResponseContract<Unit>(Unit.Value);
         }
     }
 }
