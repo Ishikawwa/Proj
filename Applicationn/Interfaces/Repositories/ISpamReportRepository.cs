@@ -8,5 +8,6 @@ namespace Application.Interfaces.Repositories
         Task<List<SpamReportEntity>> GetPendingAsync();
         Task MarkAsProcessedAsync(Guid id);
         Task DeleteAsync(Guid id);
+        Task<SpamReportEntity> GetByIdAsync(Guid id);
     }
 }

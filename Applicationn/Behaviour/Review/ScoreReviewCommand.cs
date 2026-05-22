@@ -32,19 +32,12 @@ namespace Application.Behaviour.Review
     {
         public async Task<ResponseContract<ReviewScoreEntity>> Handle(ScoreReviewCommand request, CancellationToken cancellationToken)
         {
-            ReviewScoreEntity score = await reviewScoreRepository.GetByIdAsync(request.ReviewId);
             ReviewEntity review = await reviewRepository.GetByIdAsync(request.ReviewId);
-
-            if (score == null)
-            {
-                return new ResponseContract<ReviewScoreEntity>(ErrorCodes.NullReviewScore);
-            }
 
             if (review == null)
             {
                 return new ResponseContract<ReviewScoreEntity>(ErrorCodes.ReviewNotFound);
             }
-
 
             ReviewScoreEntity entity = new()
             {

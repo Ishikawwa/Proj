@@ -30,8 +30,6 @@ namespace Application.Behaviour.Institution
                 return new ResponseContract<InstitutionEntity>(ErrorCodes.InstitutionNotFound);
             }
 
-            await repository.GetByIdAsync(request.Id);
-
             return new ResponseContract<InstitutionEntity>(institution);
         }
     }

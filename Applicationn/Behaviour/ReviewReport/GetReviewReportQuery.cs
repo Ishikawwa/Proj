@@ -13,9 +13,9 @@ namespace Application.Behaviour.ReviewReport
     {
         public async Task<ResponseContract<List<SpamReportEntity>>> Handle(GetReviewReportQuery request, CancellationToken cancellationToken)
         {
-            await repository.GetPendingAsync();
+            List<SpamReportEntity> reports = await repository.GetPendingAsync();
 
-            return new ResponseContract<List<SpamReportEntity>>();
+            return new ResponseContract<List<SpamReportEntity>>(reports);
         }
     }
 }

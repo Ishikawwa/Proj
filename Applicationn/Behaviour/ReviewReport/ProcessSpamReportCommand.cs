@@ -23,19 +23,14 @@ namespace Application.Behaviour.ReviewReport
     {
         public async Task<ResponseContract<Unit>> Handle(ProcessSpamReportCommand request, CancellationToken cancellationToken)
         {
-            ReviewEntity review = await reviewRepository.GetByIdAsync(request.Id);
+            SpamReportEntity report = await spamReportRepository.GetByIdAsync(request.Id);
 
-            if (review == null)
+            if (report == null)
             {
                 return new ResponseContract<Unit>(ErrorCodes.ReviewNotFound);
             }
 
-            if (review.IsBanned)
-            {
-                return new ResponseContract<Unit>(ErrorCodes.ReviewIsBanned);
-            }
-
-            spamReportRepository.MarkAsProcessedAsync(request.Id);
+            await spamReportRepository.MarkAsProcessedAsync(request.Id);
 
             return new ResponseContract<Unit>(Unit.Value);
         }

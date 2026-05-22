@@ -27,11 +27,11 @@ namespace Project.Controllers
                 .Adapt<ResponseContract<List<UserDto>>>();
 
         [HttpPut("{id}/ban")]
-        public async Task Ban([FromRoute] Guid id)
+        public async Task<ResponseContract<Unit>> Ban([FromRoute] Guid id)
             => await mediator.Send(new BanUserCommand { Id = id });
 
         [HttpPut("{id}/mute")]
-        public async Task Mute([FromRoute] Guid id)
+        public async Task<ResponseContract<Unit>> Mute([FromRoute] Guid id)
             => await mediator.Send(new MuteUserCommand { Id = id });
     }
 }

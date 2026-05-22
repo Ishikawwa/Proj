@@ -13,9 +13,9 @@ namespace Application.Behaviour.OwnerRequest
     {
         public async Task<ResponseContract<List<OwnerRequestEntity>>> Handle(GetOwnerRequestsQuery request, CancellationToken cancellationToken)
         {
-            await repository.GetPendingAsync();
+            List<OwnerRequestEntity> requests = await repository.GetPendingAsync();
 
-            return new ResponseContract<List<OwnerRequestEntity>>();
+            return new ResponseContract<List<OwnerRequestEntity>>(requests);
         }
     }
 }

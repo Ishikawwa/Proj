@@ -13,14 +13,16 @@ namespace Project.Controllers
     {
         [HttpPost]
         public async Task<ResponseContract<CreateSpamReportDto>> Create([FromBody] CreateReviewReportDto dto)
-            => (await mediator.Send(dto.Adapt<CreateReviewReportCommand>())).Adapt<ResponseContract<CreateSpamReportDto>>();
+            => (await mediator.Send(dto.Adapt<CreateReviewReportCommand>()))
+                .Adapt<ResponseContract<CreateSpamReportDto>>();
 
         [HttpGet]
         public async Task<ResponseContract<List<CreateSpamReportDto>>> GetAll()
-            => (await mediator.Send(new GetReviewReportQuery())).Adapt<ResponseContract<List<CreateSpamReportDto>>>();
+            => (await mediator.Send(new GetReviewReportQuery()))
+                .Adapt<ResponseContract<List<CreateSpamReportDto>>>();
 
         [HttpPut("{id}/process")]
-        public async Task MarkAsProcessed([FromRoute] Guid id)
+        public async Task<ResponseContract<Unit>> MarkAsProcessed([FromRoute] Guid id)
             => await mediator.Send(new ProcessSpamReportCommand { Id = id });
     }
 }

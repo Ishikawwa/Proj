@@ -10,5 +10,6 @@
         public static string ReviewNotFound => "ReviewNotFound";
         public static string NullReviewScore => "NullReviewScore";
         public static string OwnerNotFound => "OwnerNotFound";
+        public static string OwnerAlreadyAssigned => "OwnerAlreadyAssigned";
     }
 }

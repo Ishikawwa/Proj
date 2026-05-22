@@ -1,5 +1,6 @@
 ﻿using Application.Behaviour.Review;
 using Application.Utils;
+using Domain.Entities;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -22,19 +23,19 @@ namespace Project.Controllers
                 .Adapt<ResponseContract<List<ReviewDto>>>();
 
         [HttpPut]
-        public async Task Update([FromBody] ReviewToUpdateDto dto)
+        public async Task<ResponseContract<Unit>> Update([FromBody] ReviewToUpdateDto dto)
             => await mediator.Send(dto.Adapt<UpdateReviewCommand>());
 
         [HttpDelete("{id}")]
-        public async Task Delete([FromRoute] Guid id)
+        public async Task<ResponseContract<Unit>> Delete([FromRoute] Guid id)
             => await mediator.Send(new DeleteReviewCommand { Id = id });
 
         [HttpPut("{id}/ban")]
-        public async Task Ban([FromRoute] Guid id)
+        public async Task<ResponseContract<Unit>> Ban([FromRoute] Guid id)
             => await mediator.Send(new BanReviewCommand { Id = id });
 
         [HttpPost("{reviewId}/vote")]
-        public async Task<Guid> VoteOnReview([FromRoute] Guid reviewId, [FromBody] ReviewScoreDto dto)
-            => (await mediator.Send(dto.Adapt<ScoreReviewCommand>() with { ReviewId = reviewId })).Id;
+        public async Task<ResponseContract<ReviewScoreEntity>> VoteOnReview([FromRoute] Guid reviewId, [FromBody] ReviewScoreDto dto)
+            => await mediator.Send(dto.Adapt<ScoreReviewCommand>() with { ReviewId = reviewId });
     }
 }

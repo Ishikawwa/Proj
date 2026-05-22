@@ -21,7 +21,7 @@ namespace Application.Behaviour.OwnerRequest
     {
         public async Task<ResponseContract<Unit>> Handle(ProcessOwnerRequestCommand request, CancellationToken cancellationToken)
         {
-            repository.MarkAsProcessedAsync(request.Id);
+            await repository.MarkAsProcessedAsync(request.Id);
 
             return new ResponseContract<Unit>(Unit.Value);
         }

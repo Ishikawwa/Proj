@@ -29,20 +29,15 @@ namespace Application.Behaviour.Institution
         public async Task<ResponseContract<List<FavouriteInstitutionEntity>>> Handle(GetFavoriteListQuery request, CancellationToken cancellationToken)
         {
             UserEntity user = await userRepository.GetByIdAsync(request.UserId);
-            InstitutionEntity institution = await institutionRepository.GetByIdAsync(request.UserId);
+
             if (user == null)
             {
                 return new ResponseContract<List<FavouriteInstitutionEntity>>(ErrorCodes.UserNotFound);
             }
 
-            if (institution == null)
-            {
-                return new ResponseContract<List<FavouriteInstitutionEntity>>(ErrorCodes.InstitutionNotFound);
-            }
+            List<FavouriteInstitutionEntity> favourites = await repository.GetByUserIdAsync(request.UserId);
 
-            await repository.GetByUserIdAsync(request.UserId);
-
-            return new ResponseContract<List<FavouriteInstitutionEntity>>((List<FavouriteInstitutionEntity>)repository);
+            return new ResponseContract<List<FavouriteInstitutionEntity>>(favourites);
         }
     }
 }

@@ -30,8 +30,6 @@ namespace Application.Behaviour.User
                 return new ResponseContract<UserEntity>(ErrorCodes.UserNotFound);
             }
 
-            await userRepository.GetByIdAsync(request.Id);
-
             return new ResponseContract<UserEntity>(user);
         }
     }

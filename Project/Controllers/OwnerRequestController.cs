@@ -22,7 +22,7 @@ namespace Project.Controllers
                 .Adapt<ResponseContract<List<OwnerRequestDto>>>();
 
         [HttpPut("{id}/process")]
-        public async Task MarkAsProcessed([FromRoute] Guid id)
+        public async Task<ResponseContract<Unit>> MarkAsProcessed([FromRoute] Guid id)
             => await mediator.Send(new ProcessOwnerRequestCommand { Id = id });
     }
 }

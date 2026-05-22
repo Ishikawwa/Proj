@@ -35,9 +35,9 @@ namespace Application.Behaviour.Institution
                 return new ResponseContract<Unit>(ErrorCodes.InstitutionNotFound);
             }
 
-            if (institution.OwnerId is null)
+            if (institution.OwnerId is not null)
             {
-                return new ResponseContract<Unit>(ErrorCodes.OwnerNotFound);
+                return new ResponseContract<Unit>(ErrorCodes.OwnerAlreadyAssigned);
             }
             await institutionRepository.AssignOwnerAsync(request.InstitutionId, request.OwnerId);
 

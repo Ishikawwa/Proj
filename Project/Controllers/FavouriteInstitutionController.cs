@@ -12,8 +12,8 @@ namespace Project.Controllers
     public class FavouriteController(IMediator mediator) : ControllerBase
     {
         [HttpPost]
-        public async Task<ResponseContract<AddInFavoriteInstitutionListDto>> Add([FromBody] ResponseContract<AddInFavoriteInstitutionListDto> dto)
-            => (ResponseContract<AddInFavoriteInstitutionListDto>)await mediator.Send(dto.Adapt<ResponseContract<AddInFavoriteListCommand>>());
+        public async Task<ResponseContract<Unit>> Add([FromBody] AddInFavoriteInstitutionListDto dto)
+            => await mediator.Send(dto.Adapt<AddInFavoriteListCommand>());
 
         [HttpGet("{userId}")]
         public async Task<ResponseContract<List<UsersFavoriteInstitutionDto>>> GetByUser([FromRoute] Guid userId)

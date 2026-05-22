@@ -12,9 +12,9 @@ namespace Application.Behaviour.Institution
     {
         public async Task<ResponseContract<List<InstitutionEntity>>> Handle(GetInstitutionQuery request, CancellationToken cancellationToken)
         {
-            await institutionRepository.GetAllAsync();
+            List<InstitutionEntity> institutions = await institutionRepository.GetAllAsync();
 
-            return new ResponseContract<List<InstitutionEntity>>((List<InstitutionEntity>)institutionRepository);
+            return new ResponseContract<List<InstitutionEntity>>(institutions);
         }
     }
 }

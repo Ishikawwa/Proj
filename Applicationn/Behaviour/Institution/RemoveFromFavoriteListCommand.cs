@@ -25,15 +25,9 @@ namespace Application.Behaviour.Institution
     {
         public async Task<ResponseContract<Unit>> Handle(RemoveFromFavoriteListCommand request, CancellationToken cancellationToken)
         {
-            List<FavouriteInstitutionEntity> institution = await institutionRepository.GetByUserIdAsync(request.Id);
-            UserEntity user = await userRepository.GetByIdAsync(request.Id);
+            FavouriteInstitutionEntity favourite = await institutionRepository.GetByIdAsync(request.Id);
 
-            if (user == null)
-            {
-                return new ResponseContract<Unit>(ErrorCodes.UserNotFound);
-            }
-
-            if (institution == null)
+            if (favourite == null)
             {
                 return new ResponseContract<Unit>(ErrorCodes.InstitutionNotFound);
             }

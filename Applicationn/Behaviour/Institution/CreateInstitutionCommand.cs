@@ -1,5 +1,4 @@
 ﻿using Application.Utils;
-using Domain.Constants;
 using Domain.Entities;
 using Domain.Enums;
 using FluentValidation;
@@ -57,13 +56,6 @@ namespace Application.Behaviour.Institution
     {
         public async Task<ResponseContract<InstitutionEntity>> Handle(CreateInstitutionCommand request, CancellationToken cancellationToken)
         {
-            InstitutionEntity institution = await institutionRepository.GetByIdAsync(request.Id);
-
-            if (institution == null)
-            {
-                return new ResponseContract<InstitutionEntity>(ErrorCodes.InstitutionNotFound);
-            }
-
             InstitutionEntity entity = new()
             {
                 Id = Guid.NewGuid(),

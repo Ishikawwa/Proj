@@ -1,6 +1,5 @@
 ﻿using Application.Interfaces.Repositories;
 using Application.Utils;
-using Domain.Constants;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
@@ -34,23 +33,6 @@ namespace Application.Behaviour.User
     {
         public async Task<ResponseContract<UserEntity>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            UserEntity user = await userRepository.GetByIdAsync(request.Id);
-
-            if (user == null)
-            {
-                return new ResponseContract<UserEntity>(ErrorCodes.UserNotFound);
-            }
-
-            if (user.IsMuted)
-            {
-                return new ResponseContract<UserEntity>(ErrorCodes.UserIsMuted);
-            }
-
-            if (user.IsBanned)
-            {
-                return new ResponseContract<UserEntity>(ErrorCodes.UserIsBanned);
-            }
-
             UserEntity entity = new()
             {
                 Id = Guid.NewGuid(),

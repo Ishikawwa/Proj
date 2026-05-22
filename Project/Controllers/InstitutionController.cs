@@ -14,8 +14,8 @@ namespace Project.Controllers
     public class InstitutionController(IMediator mediator) : ControllerBase
     {
         [HttpPost]
-        public async Task<ResponseContract<InstitutionDto>> Create([FromBody] ResponseContract<InstitutionToCreateDto> dto)
-            => (await mediator.Send(dto.Adapt<ResponseContract<CreateInstitutionCommand>>())).Adapt<ResponseContract<InstitutionDto>>();
+        public async Task<ResponseContract<InstitutionDto>> Create([FromBody] InstitutionToCreateDto dto)
+            => (await mediator.Send(dto.Adapt<CreateInstitutionCommand>())).Adapt<ResponseContract<InstitutionDto>>();
 
         [HttpGet]
         public async Task<ResponseContract<List<InstitutionDto>>> GetAll()
@@ -31,23 +31,23 @@ namespace Project.Controllers
                 .Adapt<ResponseContract<List<InstitutionDto>>>();
 
         [HttpPut]
-        public async Task Update([FromBody] InstitutionToUpdateDto dto)
+        public async Task<ResponseContract<Unit>> Update([FromBody] InstitutionToUpdateDto dto)
             => await mediator.Send(dto.Adapt<UpdateInstitutionCommand>());
 
         [HttpPut("assign-owner")]
-        public async Task AssignOwner([FromBody] AssignOwnerToInstitutionDto dto)
+        public async Task<ResponseContract<Unit>> AssignOwner([FromBody] AssignOwnerToInstitutionDto dto)
             => await mediator.Send(dto.Adapt<AssignOwnerToInstitutionCommand>());
 
         [HttpDelete("{id}")]
-        public async Task Delete([FromRoute] Guid id)
+        public async Task<ResponseContract<Unit>> Delete([FromRoute] Guid id)
             => await mediator.Send(new DeleteInstitutionCommand { Id = id });
 
         [HttpPost("{institutionId}/labels")]
-        public async Task AddLabel([FromRoute] Guid institutionId, [FromBody] InstitutionLabelToManageDto dto)
+        public async Task<ResponseContract<Unit>> AddLabel([FromRoute] Guid institutionId, [FromBody] InstitutionLabelToManageDto dto)
             => await mediator.Send(dto.Adapt<AddLabelToInstitutionCommand>() with { InstitutionId = institutionId });
 
         [HttpDelete("{institutionId}/labels/{label}")]
-        public async Task RemoveLabel([FromRoute] Guid institutionId, [FromRoute] LabelTypeEnum label)
+        public async Task<ResponseContract<Unit>> RemoveLabel([FromRoute] Guid institutionId, [FromRoute] LabelTypeEnum label)
             => await mediator.Send(new RemoveLabelFromInstitutionCommand { InstitutionId = institutionId, Label = label });
 
     }
