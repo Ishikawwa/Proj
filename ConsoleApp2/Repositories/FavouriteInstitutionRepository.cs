@@ -17,6 +17,11 @@ namespace Persistence.Repositories
             return context.FavouriteInstitutions.Where(x => x.UserId == userId).ToListAsync();
         }
 
+        public Task<FavouriteInstitutionEntity> GetByIdAsync(Guid id)
+        {
+            return context.FavouriteInstitutions.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public Task DeleteAsync(Guid id)
         {
             return context.FavouriteInstitutions.Where(x => x.Id == id).ExecuteDeleteAsync();

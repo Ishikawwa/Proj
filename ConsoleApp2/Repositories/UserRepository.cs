@@ -36,5 +36,10 @@ namespace Persistence.Repositories
         {
             return context.Users.Where(x => x.Id == id).ExecuteDeleteAsync();
         }
+
+        public Task<UserEntity?> GetByVkIdAsync(string vkId)
+        {
+            return context.Users.FirstOrDefaultAsync(x => x.VkId == vkId);
+        }
     }
 }

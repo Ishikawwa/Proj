@@ -10,6 +10,7 @@ namespace Application.Interfaces.Repositories
         Task BanAsync(Guid id);
         Task MuteAsync(Guid id);
         Task DeleteAsync(Guid id);
+        Task<UserEntity?> GetByVkIdAsync(string vkId);
     }
 
 }

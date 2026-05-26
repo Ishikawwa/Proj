@@ -1,0 +1,27 @@
+﻿using Application.Behaviour.Auth;
+using Application.Utils;
+using Mapster;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Project.DTO.AuthDto;
+
+namespace Project.Controllers
+{
+    [ApiController]
+    [Route("api/auth")]
+    public class AuthController(IMediator mediator) : ControllerBase
+    {
+        [HttpPost("vk")]
+        public async Task<ResponseContract<AuthResponseDto>> VkLogin([FromBody] VkLoginDto dto)
+        {
+            ResponseContract<string> result =
+                await mediator.Send(dto.Adapt<VkLoginCommand>());
+
+            if (!result.Ok)
+                return new ResponseContract<AuthResponseDto>(result.ErrorCode!);
+
+            return new ResponseContract<AuthResponseDto>(
+                new AuthResponseDto { Token = result.Data! });
+        }
+    }
+}

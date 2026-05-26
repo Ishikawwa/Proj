@@ -8,5 +8,7 @@
         public DateTime CreatedAt { get; set; }
         public bool IsBanned { get; set; }
         public bool IsMuted { get; set; }
+        public string? VkId { get; set; }
+        public string? Email { get; set; }
     }
 }
