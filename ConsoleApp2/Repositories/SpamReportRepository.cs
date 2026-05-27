@@ -12,6 +12,11 @@ namespace Persistence.Repositories
             await context.SaveChangesAsync();
         }
 
+        public Task<SpamReportEntity> GetByIdAsync(Guid id)
+        {
+            return context.SpamReports.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public Task DeleteAsync(Guid id)
         {
             return context.SpamReports.Where(x => x.Id == id).ExecuteDeleteAsync();

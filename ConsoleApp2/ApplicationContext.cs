@@ -18,9 +18,14 @@ namespace Persistence
         public DbSet<OwnerRequestEntity> OwnerRequests { get; set; }
         public DbSet<UpdateInstitutionRequestEntity> UpdateInstitutionRequests { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<InstitutionLabelEntity>()
+                .HasKey(x => new { x.InstitutionId, x.Label });
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseNpgsql("");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=ProjectDb;Username=postgres;Password=admin");
         }
     }
 }
