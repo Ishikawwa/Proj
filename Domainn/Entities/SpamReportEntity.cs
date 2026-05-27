@@ -6,7 +6,7 @@
         public Guid UserId { get; set; }
         public UserEntity User { get; set; }
         public Guid ReviewId { get; set; }
-        public ReviewEntity ReviewEntity { get; set; }
+        public ReviewEntity Review { get; set; }
         public string Comment { get; set; }
         public bool IsProcessed { get; set; }
     }

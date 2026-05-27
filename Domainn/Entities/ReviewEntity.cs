@@ -6,7 +6,7 @@
         public Guid UserId { get; set; }
         public UserEntity User { get; set; }
         public Guid InstitutionId { get; set; }
-        public InstitutionEntity InstitutionEntity { get; set; }
+        public InstitutionEntity Institution { get; set; }
         public string Comment { get; set; }
         public int Score { get; set; }
         public DateTime CreatedAt { get; set; }
