@@ -5,6 +5,7 @@ using FluentValidation;
 using Infrastructure.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
 using Persistence.Repositories;
@@ -18,7 +19,6 @@ namespace Project
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllers();
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.ReferenceHandler =
@@ -60,7 +60,10 @@ namespace Project
             builder.Services.AddScoped<IReviewScoreRepository, ReviewScoreRepository>();
 
             builder.Services.AddHttpClient<IVkAuthService, VkAuthService>();
-            builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddSingleton<IJwtService, JwtService>();
+
+            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.Section));
+            builder.Services.Configure<VkOptions>(builder.Configuration.GetSection(VkOptions.Section));
 
             string jwtSecret = builder.Configuration["JwtOptions:Secret"]!;
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -103,6 +106,13 @@ namespace Project
             app.UseAuthorization();
 
             app.MapControllers();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+                db.Database.Migrate();
+            }
+
             app.Run();
         }
     }

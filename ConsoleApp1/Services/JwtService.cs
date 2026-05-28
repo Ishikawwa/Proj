@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -9,16 +9,12 @@ using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegiste
 
 namespace Infrastructure.Services
 {
-    public class JwtService(IConfiguration configuration) : IJwtService
+    public class JwtService(IOptions<JwtOptions> options) : IJwtService
     {
+        private readonly JwtOptions _options = options.Value;
         public string GenerateToken(UserEntity user)
         {
-            string secret = configuration["JwtOptions:Secret"]!;
-            string issuer = configuration["JwtOptions:Issuer"]!;
-            string audience = configuration["JwtOptions:Audience"]!;
-            int expiresInDays = int.Parse(configuration["JwtOptions:ExpiresInDays"] ?? "7");
-
-            SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(secret));
+            SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(_options.Secret));
             SigningCredentials creds = new(key, SecurityAlgorithms.HmacSha256);
 
             Claim[] claims =
@@ -29,10 +25,10 @@ namespace Infrastructure.Services
             ];
 
             JwtSecurityToken token = new(
-                issuer: issuer,
-                audience: audience,
+                issuer: _options.Issuer,
+                audience: _options.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(expiresInDays),
+                expires: DateTime.UtcNow.AddDays(_options.ExpiresInDays),
                 signingCredentials: creds
             );
 

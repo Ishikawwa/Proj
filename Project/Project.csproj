@@ -22,7 +22,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Applicationn\Application.csproj" />
     <ProjectReference Include="..\ConsoleApp2\Persistence.csproj" />
-    <ProjectReference Include="..\Domainn\Domain.csproj" />
+	  <ProjectReference Include="..\Domainn\Domain.csproj" />
+	  <ProjectReference Include="..\ConsoleApp1\Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

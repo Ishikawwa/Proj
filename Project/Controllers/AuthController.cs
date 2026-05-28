@@ -1,9 +1,12 @@
 ﻿using Application.Behaviour.Auth;
+using Application.Behaviour.Institution;
 using Application.Utils;
 using Mapster;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.DTO.AuthDto;
+using Project.DTO.UserDto;
 
 namespace Project.Controllers
 {
@@ -22,6 +25,15 @@ namespace Project.Controllers
 
             return new ResponseContract<AuthResponseDto>(
                 new AuthResponseDto { Token = result.Data! });
+        }
+
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<ResponseContract<UserDto>> GetMe()
+        {
+            var userId = Guid.Parse(User.FindFirst("sub")!.Value);
+
+            return (await mediator.Send(new GetMeQuery(userId))).Adapt<ResponseContract<UserDto>>();
         }
     }
 }
