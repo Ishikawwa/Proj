@@ -9,22 +9,28 @@ namespace Infrastructure.Services
         private const string ApiVersion = "5.131";
         private readonly VkOptions _options = options.Value;
 
-        public async Task<VkUserInfo?> ExchangeSilentTokenAsync(string silentToken, string uuid)
+        public async Task<VkUserInfo?> ExchangeCodeAsync(string code, string deviceId, string codeVerifier)
         {
-            string exchangeUrl = $"https://api.vk.com/method/auth.exchangeSilentAuthToken" +
-                $"?v={ApiVersion}" +
-                $"&token={Uri.EscapeDataString(silentToken)}" +
-                $"&uuid={Uri.EscapeDataString(uuid)}" +
-                $"&access_token={_options.ServiceToken}";
+            var formData = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                ["grant_type"] = "authorization_code",
+                ["code"] = code,
+                ["device_id"] = deviceId,
+                ["code_verifier"] = codeVerifier,
+                ["client_id"] = _options.ClientId,
+                ["redirect_uri"] = _options.RedirectUri
+            });
 
-            ExchangeTokenResponse? exchangeResult =
-                await httpClient.GetFromJsonAsync<ExchangeTokenResponse>(exchangeUrl);
+            HttpResponseMessage response = await httpClient.PostAsync("https://id.vk.ru/oauth2/auth", formData);
+            string rawJson = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("VK response: " + rawJson);
+            ExchangeTokenResponse? exchangeResult = System.Text.Json.JsonSerializer.Deserialize<ExchangeTokenResponse>(rawJson);
 
-            if (exchangeResult?.Response == null)
+            if (exchangeResult == null || !string.IsNullOrEmpty(exchangeResult.Error))
                 return null;
 
-            string userAccessToken = exchangeResult.Response.AccessToken;
-            long userId = exchangeResult.Response.UserId;
+            string userAccessToken = exchangeResult.AccessToken;
+            long userId = exchangeResult.UserId;
 
             string usersGetUrl = $"https://api.vk.com/method/users.get" +
                 $"?v={ApiVersion}" +
@@ -32,10 +38,9 @@ namespace Infrastructure.Services
                 $"&fields=photo_100" +
                 $"&access_token={userAccessToken}";
 
-            UsersGetResponse? usersResult =
-                await httpClient.GetFromJsonAsync<UsersGetResponse>(usersGetUrl);
-
+            UsersGetResponse? usersResult = await httpClient.GetFromJsonAsync<UsersGetResponse>(usersGetUrl);
             VkUserData? vkUser = usersResult?.Response?.FirstOrDefault();
+
             if (vkUser == null)
                 return null;
 
@@ -45,7 +50,6 @@ namespace Infrastructure.Services
                 FirstName = vkUser.FirstName,
                 LastName = vkUser.LastName,
                 Photo = vkUser.Photo,
-                Email = exchangeResult.Response.Email
             };
         }
     }

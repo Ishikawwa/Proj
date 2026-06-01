@@ -11,6 +11,6 @@
 
     public interface IVkAuthService
     {
-        Task<VkUserInfo?> ExchangeSilentTokenAsync(string silentToken, string uuid);
+        Task<VkUserInfo?> ExchangeCodeAsync(string code, string deviceId, string codeVerifier);
     }
 }

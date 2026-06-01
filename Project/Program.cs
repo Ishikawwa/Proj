@@ -58,6 +58,8 @@ namespace Project
             builder.Services.AddScoped<IFavouriteInstitutionRepository, FavouriteInstitutionRepository>();
             builder.Services.AddScoped<IVisitingRepository, VisitingRepository>();
             builder.Services.AddScoped<IReviewScoreRepository, ReviewScoreRepository>();
+            builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection(MinioOptions.Section));
+            builder.Services.AddScoped<IFileService, FileService>();
 
             builder.Services.AddHttpClient<IVkAuthService, VkAuthService>();
             builder.Services.AddSingleton<IJwtService, JwtService>();
@@ -89,8 +91,7 @@ namespace Project
                 cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             });
 
-            builder.Services.AddValidatorsFromAssembly(
-                typeof(Application.Behaviour.Review.CreateReviewCommand).Assembly);
+            builder.Services.AddValidatorsFromAssembly(typeof(Application.Behaviour.Review.CreateReviewCommand).Assembly);
 
             var app = builder.Build();
 

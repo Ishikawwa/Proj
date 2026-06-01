@@ -41,5 +41,11 @@ namespace Persistence.Repositories
         {
             return context.Users.FirstOrDefaultAsync(x => x.VkId == vkId);
         }
+
+        public async Task UpdateAsync(UserEntity entity)
+        {
+            context.Users.Update(entity);
+            await context.SaveChangesAsync();
+        }
     }
 }

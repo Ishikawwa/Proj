@@ -8,7 +8,7 @@ namespace Application.Behaviour.User
 {
     public record CreateUserCommand : IRequest<ResponseContract<UserEntity>>
     {
-        public Guid Id { get; set; } // +
+        public Guid Id { get; set; }
         public string Nickname { get; set; }
         public string? AvatarUrl { get; set; }
     }

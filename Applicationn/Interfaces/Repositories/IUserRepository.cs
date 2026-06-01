@@ -11,6 +11,7 @@ namespace Application.Interfaces.Repositories
         Task MuteAsync(Guid id);
         Task DeleteAsync(Guid id);
         Task<UserEntity?> GetByVkIdAsync(string vkId);
+        Task UpdateAsync(UserEntity user);
     }
 
 }

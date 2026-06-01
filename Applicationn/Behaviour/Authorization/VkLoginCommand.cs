@@ -9,19 +9,21 @@ namespace Application.Behaviour.Auth
 {
     public record VkLoginCommand : IRequest<ResponseContract<string>>
     {
-        public string SilentToken { get; set; } = string.Empty;
-        public string Uuid { get; set; } = string.Empty;
+        public string Code { get; set; } = string.Empty;
+        public string DeviceId { get; set; } = string.Empty;
+        public string CodeVerifier { get; set; } = string.Empty;
     }
 
     public class VkLoginCommandValidator : AbstractValidator<VkLoginCommand>
     {
         public VkLoginCommandValidator()
         {
-            RuleFor(x => x.SilentToken)
-                .NotEmpty().WithMessage("SilentToken обязателен");
-
-            RuleFor(x => x.Uuid)
-                .NotEmpty().WithMessage("Uuid обязателен");
+            RuleFor(x => x.Code)
+                .NotEmpty().WithMessage("Code обязателен");
+            RuleFor(x => x.DeviceId)
+                .NotEmpty().WithMessage("DeviceId обязателен");
+            RuleFor(x => x.CodeVerifier)
+                .NotEmpty().WithMessage("CodeVerifier обязателен");
         }
     }
 
@@ -32,7 +34,7 @@ namespace Application.Behaviour.Auth
     {
         public async Task<ResponseContract<string>> Handle(VkLoginCommand request, CancellationToken cancellationToken)
         {
-            VkUserInfo? vkUser = await vkAuthService.ExchangeSilentTokenAsync(request.SilentToken, request.Uuid);
+            VkUserInfo? vkUser = await vkAuthService.ExchangeCodeAsync(request.Code, request.DeviceId, request.CodeVerifier);
 
             if (vkUser == null)
                 return new ResponseContract<string>("VkTokenInvalid");
@@ -55,7 +57,8 @@ namespace Application.Behaviour.Auth
             }
 
             string jwt = jwtService.GenerateToken(user);
-            return new ResponseContract<string>(jwt);
+            //return new ResponseContract<string>(jwt);
+            return new ResponseContract<string> { Data = jwt, Ok = true };
         }
     }
 }

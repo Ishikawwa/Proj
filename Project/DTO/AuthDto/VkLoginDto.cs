@@ -2,7 +2,8 @@
 {
     public class VkLoginDto
     {
-        public string SilentToken { get; set; } = string.Empty;
-        public string Uuid { get; set; } = string.Empty;
+        public string Code { get; set; } = string.Empty;
+        public string DeviceId { get; set; } = string.Empty;
+        public string CodeVerifier { get; set; } = string.Empty;
     }
 }

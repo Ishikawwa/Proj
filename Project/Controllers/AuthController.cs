@@ -31,7 +31,7 @@ namespace Project.Controllers
         [Authorize]
         public async Task<ResponseContract<UserDto>> GetMe()
         {
-            var userId = Guid.Parse(User.FindFirst("sub")!.Value);
+            var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
 
             return (await mediator.Send(new GetMeQuery(userId))).Adapt<ResponseContract<UserDto>>();
         }
