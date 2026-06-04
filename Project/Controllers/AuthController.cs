@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.DTO.AuthDto;
 using Project.DTO.UserDto;
+using System.Security.Claims;
 
 namespace Project.Controllers
 {
@@ -31,9 +32,12 @@ namespace Project.Controllers
         [Authorize]
         public async Task<ResponseContract<UserDto>> GetMe()
         {
-            var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+            var vkId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return (await mediator.Send(new GetMeQuery(userId))).Adapt<ResponseContract<UserDto>>();
+            if (string.IsNullOrEmpty(vkId))
+                return new ResponseContract<UserDto>("Unauthorized");
+
+            return (await mediator.Send(new GetMeQuery(vkId))).Adapt<ResponseContract<UserDto>>();
         }
     }
 }

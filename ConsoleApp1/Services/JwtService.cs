@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Infrastructure.Services
 {
@@ -19,7 +18,7 @@ namespace Infrastructure.Services
 
             Claim[] claims =
             [
-                new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new(JwtRegisteredClaimNames.Sub, user.VkId ?? string.Empty),
                 new("nickname", user.Nickname),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             ];

@@ -10,5 +10,6 @@
         public bool IsMuted { get; set; }
         public string? VkId { get; set; }
         public string? Email { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

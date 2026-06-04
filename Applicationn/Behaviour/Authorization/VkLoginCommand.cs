@@ -57,7 +57,7 @@ namespace Application.Behaviour.Auth
             }
 
             string jwt = jwtService.GenerateToken(user);
-            //return new ResponseContract<string>(jwt);
+
             return new ResponseContract<string> { Data = jwt, Ok = true };
         }
     }

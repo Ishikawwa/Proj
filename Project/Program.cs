@@ -79,8 +79,8 @@ namespace Project
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = builder.Configuration["JwtOptions:Issuer"],
                         ValidAudience = builder.Configuration["JwtOptions:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(jwtSecret))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+                        NameClaimType = "sub"
                     };
                 });
 
