@@ -11,13 +11,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{F3A35C2C-9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{5600A24A-32F5-4D92-99E4-1D459E4C1536}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domainn\Domain.csproj", "{A693E2DB-1493-4DD9-941B-1F80AC661909}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{A693E2DB-1493-4DD9-941B-1F80AC661909}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Applicationn\Application.csproj", "{E7FD0B08-2E63-42AB-A21E-E408D1CC55CB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{E7FD0B08-2E63-42AB-A21E-E408D1CC55CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "ConsoleApp1\Infrastructure.csproj", "{EB8784B7-96C1-445A-B6AC-8DAE39DEE939}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{EB8784B7-96C1-445A-B6AC-8DAE39DEE939}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence", "ConsoleApp2\Persistence.csproj", "{2779AB81-8D07-4527-8DB5-BD588957AC12}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence", "Persistence\Persistence.csproj", "{2779AB81-8D07-4527-8DB5-BD588957AC12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -3,6 +3,7 @@ using Application.Utils;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Project.Attributes;
 using Project.DTO.OwnerDto;
 
 namespace Project.Controllers
@@ -11,6 +12,7 @@ namespace Project.Controllers
     [Route("api/owner-requests")]
     public class OwnerRequestController(IMediator mediator) : ControllerBase
     {
+        [UserAllowed]
         [HttpPost]
         public async Task<ResponseContract<OwnerRequestDto>> Create([FromBody] OwnerRequestToCreateDto dto)
             => (await mediator.Send(dto.Adapt<CreateOwnerRequestCommand>()))
